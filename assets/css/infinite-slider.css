@@ -1,0 +1,17 @@
+@keyframes slideUp {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+  
+  .flower-slide-content {
+    animation: slideUp 10s linear infinite;
+  }
+  
+  .flower-slide img {
+    animation: slideUp 10s linear infinite;
+  }
+  

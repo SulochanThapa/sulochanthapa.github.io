@@ -1,0 +1,62 @@
+# General site settings
+title: Orchid Ghar
+description: Orchid Ghar is your premier destination for a wide variety of high-quality flowers and plants. We specialize in exotic orchids, gadavari, lallupatey, and more, bringing nature's beauty to your home or office. Whether you're looking to add a touch of elegance with vibrant orchids or enhance your space with other beautiful plants, we offer a diverse selection to suit every need. Visit us for the freshest blooms and expert care for all your floral needs.
+keywords: "flower grower,flower seller, orchid grower, orchid seller, orchid flowers, orchid delivery, flower delivery, exotic orchids, orchids India"
+author: "Pranay Rai"
+url: "https://orchidghar.github.io/"
+baseurl: "" # optional, used for site deployed in a subdirectory
+
+defaults:
+  - scope:
+      path: "sitemap.xml"
+    values:
+      layout: "none"
+  - scope:
+      path: "thankyou"
+    values:
+      sitemap: "false"
+  - scope:
+      path: "googlebfdf74e9e9477ded.html"
+    values:
+      sitemap: "false"
+
+# Author settings
+author: "Orchid Ghar"
+
+# Social links
+social:
+  github: https://github.com/orchidghar
+
+# Markdown settings
+markdown: kramdown
+
+# Theme settings (if using a theme)
+#theme: minimal
+
+# Plugins (if applicable)
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Build settings
+exclude:
+  - "README.md"   # Exclude files/folders from the build
+  - "LICENSE"
+
+# Analytics settings (for Google Analytics or others)
+# google_analytics: UA-XXXXX-X
+
+# Permalink settings (for post URLs)
+permalink: blog/:title/
+
+# permalink: /:year/:month/:day/:title/
+# Collections settings (for post URLs)
+collections:
+  flowers:
+    output: true
+    permalink: /flower/:title/
+# RSS feed settings
+feed:
+  path: "feed.xml"
+  limit: 10
