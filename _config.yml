@@ -54,9 +54,9 @@ permalink: blog/:title/
 # permalink: /:year/:month/:day/:title/
 # Collections settings (for post URLs)
 collections:
-  flowers:
+  projects:
     output: true
-    permalink: /flower/:title/
+    permalink: /project/:title/
 # RSS feed settings
 feed:
   path: "feed.xml"
