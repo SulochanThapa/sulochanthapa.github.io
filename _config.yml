@@ -1,9 +1,10 @@
 # General site settings
-title: Orchid Ghar
-description: Orchid Ghar is your premier destination for a wide variety of high-quality flowers and plants. We specialize in exotic orchids, gadavari, lallupatey, and more, bringing nature's beauty to your home or office. Whether you're looking to add a touch of elegance with vibrant orchids or enhance your space with other beautiful plants, we offer a diverse selection to suit every need. Visit us for the freshest blooms and expert care for all your floral needs.
-keywords: "flower grower,flower seller, orchid grower, orchid seller, orchid flowers, orchid delivery, flower delivery, exotic orchids, orchids India"
-author: "Pranay Rai"
-url: "https://orchidghar.github.io/"
+title: Sulochan Thapa
+description: Sulochan Thapa is a Local Digital Marketing Expert and Software Developer specializing in Google SEO, AI-powered SEO strategies, website development, and custom software solutions. With hands-on experience in frontend and backend development, deployment, web security, and performance optimization, Sulochan helps businesses build high-performing digital platforms and grow their online presence.
+keywords: "Sulochan Thapa, digital marketing expert, SEO expert, Google SEO, AI SEO, website developer, software developer, full stack developer, frontend development, backend development, website optimization, web security, performance optimization, site deployment, web developer Sikkim, Indian freelancer, local SEO, website design India"
+author: "Sulochan Thapa"
+author: "Sulochan Thapa"
+url: "https://sulochanthapa.github.io/"
 baseurl: "" # optional, used for site deployed in a subdirectory
 
 defaults:
@@ -21,11 +22,11 @@ defaults:
       sitemap: "false"
 
 # Author settings
-author: "Orchid Ghar"
+author: "Sulochan Thapa"
 
 # Social links
 social:
-  github: https://github.com/orchidghar
+  github: https://github.com/sulochanthapa
 
 # Markdown settings
 markdown: kramdown
