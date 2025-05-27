@@ -1,29 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="{{page.description||default:site.description}}">
-    <meta name="keywords" content="{{page.keywords||default:site.keywords}}">
-    <meta name="author" content="{{page.author||default:site.author}}">
-    <meta name="google-site-verification" content="q9HfWKmQHrlnieSqTHlq5MiOqTiOszd12aXKa1_bH4s" />
-    <title>{{ page.title||default:site.title }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.0.0/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app.css">
-    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/animations.css">
-    <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/blogsHeader.css">
-    <link rel="shortcut icon" href="{{ site.baseurl }}//favicon.ico" type="image/x-icon">
+  <meta charset="utf-8">
+  <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
+  <meta name="description" content="{{page.description||default:site.description}}">
+  <meta name="keywords" content="{{page.keywords||default:site.keywords}}">
+  <meta name="author" content="{{page.author||default:site.author}}">
+  <meta name="google-site-verification" content="q9HfWKmQHrlnieSqTHlq5MiOqTiOszd12aXKa1_bH4s" />
+  
+
+  <link rel="canonical" href="https://sulochanthapa.github.io">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="twitter:site" content="@sulochanthapa">
+  <meta name="twitter:creator" content="@sulochanthapa">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ page.title||default:site.title }}">
+  <meta name="twitter:description" content="{{page.description||default:site.description}}">
+  <meta name="twitter:image" content="{{ site.baseurl }}/assets/images/cd_logo.webp">
+
+  <meta property="og:url" content="https://sulochanthapa.github.io">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Sulochan Thapa">
+  <meta property="og:title" content="{{ page.title||default:site.title }}">
+  <meta property="og:description" content="{{page.description||default:site.description}}">
+  <meta property="og:image" content="{{ site.baseurl }}/assets/images/cd_logo.webp">
+  <title>{{ page.title||default:site.title }}</title>
+  <link rel="shortcut icon" href="{{ site.baseurl }}/favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Theme Check and Update -->
+  <script>
+    const html = document.querySelector('html');
+    const isLightOrAuto = localStorage.getItem('hs_theme') === 'light' || (localStorage.getItem('hs_theme') === 'auto' && !window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const isDarkOrAuto = localStorage.getItem('hs_theme') === 'dark' || (localStorage.getItem('hs_theme') === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+    if (isLightOrAuto && html.classList.contains('dark')) html.classList.remove('dark');
+    else if (isDarkOrAuto && html.classList.contains('light')) html.classList.remove('light');
+    else if (isDarkOrAuto && !html.classList.contains('dark')) html.classList.add('dark');
+    else if (isLightOrAuto && !html.classList.contains('light')) html.classList.add('light');
+  </script>
+
+  <!-- CSS Preline -->
+  <link rel="stylesheet" href="{{site.baseurl}}/assets/css/main.css">
 </head>
-<body>
-    {% include header.html %}
-    <main class="pt-14">
-        {% include blogsHeader.html %}
-        {{ content }}
-    </main>
-    
-    {% include footer.html %}
-              <!-- WhatsApp Floating Icon -->
+
+<body class="bg-neutral-900">
+  {% include header.html %}
+ 
+
+  <!-- ========== MAIN CONTENT ========== -->
+  <main id="content">
+    {% include blogsHeader.html %}
+     {{ content }}
+  </main>
+  <!-- ========== END MAIN CONTENT ========== -->
+     {% include footer.html %}
+     <!-- WhatsApp Floating Icon -->
 <a href="https://wa.me/919932282175" target="_blank" aria-label="Chat on WhatsApp"
 class="fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg transition-transform transform hover:scale-110">
  <!-- WhatsApp SVG Icon -->
@@ -40,74 +74,7 @@ class="fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p-
   </defs>
   </svg>
 </a>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-  const menuToggle = document.getElementById("menuToggle");
-  const mobileMenu = document.getElementById("mobileMenu");
-  const closeMenu = document.getElementById("closeMenu");
-
-  menuToggle.addEventListener("click", function () {
-    mobileMenu.classList.remove("hidden");
-    setTimeout(() => {
-      mobileMenu.querySelector("div").classList.remove("translate-x-[-100%]");
-    }, 10);
-  });
-
-  closeMenu.addEventListener("click", function () {
-    mobileMenu.querySelector("div").classList.add("translate-x-[-100%]");
-    setTimeout(() => {
-      mobileMenu.classList.add("hidden");
-    }, 300);
-  });
-
-  // Close menu when clicking outside
-  mobileMenu.addEventListener("click", function (e) {
-    if (e.target === mobileMenu) {
-      closeMenu.click();
-    }
-  });
-});
-
-      </script>
-      <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const dropdownBtn = document.getElementById("flowersDropdownBtn");
-          const dropdownMenu = document.getElementById("flowersDropdownMenu");
-        
-          dropdownBtn.addEventListener("click", function (event) {
-            event.stopPropagation();
-            dropdownMenu.classList.toggle("hidden");
-          });
-        
-          document.addEventListener("click", function (event) {
-            if (!dropdownBtn.contains(event.target)) {
-              dropdownMenu.classList.add("hidden");
-            }
-          });
-        });
-        </script>
-        <script>
-          document.addEventListener("DOMContentLoaded", function () {
-            const mobileMenu = document.getElementById("mobileMenu");
-            // const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-            const closeMobileMenu = document.getElementById("closeMobileMenu");
-            const mobileFlowersDropdownBtn = document.getElementById("mobileFlowersDropdownBtn");
-            const mobileFlowersDropdownMenu = document.getElementById("mobileFlowersDropdownMenu");
-            const mobileDropdownIcon = document.getElementById("mobileDropdownIcon");
-          
-            // Toggle Flowers Dropdown in Mobile Menu
-            mobileFlowersDropdownBtn.addEventListener("click", function () {
-              mobileFlowersDropdownMenu.classList.toggle("hidden");
-              mobileDropdownIcon.classList.toggle("rotate-180");
-            });
-          
-            // Close mobile menu when clicking outside
-            document.addEventListener("click", function (event) {
-              if (!mobileMenu.contains(event.target)) {
-                mobileMenu.classList.add("-translate-x-full");
-              }
-            });
-          });
-          </script>
+  <!-- JS Implementing Plugins -->
+  <script src="https://cdn.jsdelivr.net/npm/preline/dist/index.js"></script>
 </body>
 </html>
