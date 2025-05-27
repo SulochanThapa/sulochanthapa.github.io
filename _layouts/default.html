@@ -4,32 +4,31 @@
   <!-- Required Meta Tags Always Come First -->
   <meta charset="utf-8">
   <meta name="robots" content="max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-  <link rel="canonical" href="https://preline.co/">
+  <meta name="description" content="{{page.description||default:site.description}}">
+  <meta name="keywords" content="{{page.keywords||default:site.keywords}}">
+  <meta name="author" content="{{page.author||default:site.author}}">
+  <meta name="google-site-verification" content="q9HfWKmQHrlnieSqTHlq5MiOqTiOszd12aXKa1_bH4s" />
+  
+
+  <link rel="canonical" href="https://sulochanthapa.github.io">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="Crafted for agencies and studios specializing in web design and development.">
 
-  <meta name="twitter:site" content="@preline">
-  <meta name="twitter:creator" content="@preline">
+  <meta name="twitter:site" content="@sulochanthapa">
+  <meta name="twitter:creator" content="@sulochanthapa">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Agency Tailwind CSS Template | Preline UI, crafted with Tailwind CSS">
-  <meta name="twitter:description" content="Crafted for agencies and studios specializing in web design and development.">
-  <meta name="twitter:image" content="https://preline.co/assets/img/og-image.png">
+  <meta name="twitter:title" content="{{ page.title||default:site.title }}">
+  <meta name="twitter:description" content="{{page.description||default:site.description}}">
+  <meta name="twitter:image" content="{{ site.baseurl }}/assets/images/cd_logo.webp">
 
-  <meta property="og:url" content="https://preline.co/">
+  <meta property="og:url" content="https://sulochanthapa.github.io">
   <meta property="og:locale" content="en_US">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="Preline">
-  <meta property="og:title" content="Agency Tailwind CSS Template | Preline UI, crafted with Tailwind CSS">
-  <meta property="og:description" content="Crafted for agencies and studios specializing in web design and development.">
-  <meta property="og:image" content="https://preline.co/assets/img/og-image.png">
-
-  <!-- Title -->
-  <title>Agency Tailwind CSS Template | Preline UI, crafted with Tailwind CSS</title>
-
-  <!-- Favicon -->
-  <link rel="shortcut icon" href="../../favicon.ico">
-
-  <!-- Font -->
+  <meta property="og:site_name" content="Sulochan Thapa">
+  <meta property="og:title" content="{{ page.title||default:site.title }}">
+  <meta property="og:description" content="{{page.description||default:site.description}}">
+  <meta property="og:image" content="{{ site.baseurl }}/assets/images/cd_logo.webp">
+  <title>{{ page.title||default:site.title }}</title>
+  <link rel="shortcut icon" href="{{ site.baseurl }}/favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Theme Check and Update -->
@@ -45,7 +44,7 @@
   </script>
 
   <!-- CSS Preline -->
-  <link rel="stylesheet" href="https://preline.co/assets/css/main.css?v=3.0.0">
+  <link rel="stylesheet" href="{{site.baseurl}}/assets/css/main.css">
 </head>
 
 <body class="bg-neutral-900">
