@@ -103,7 +103,19 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-y-3 py-2 md:py-0 md:ps-7">
           <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300" href="/" aria-current="page">Home</a>
           <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300" href="#">Blogs</a>
-          <a class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300" href="#">Services</a>
+          <a
+  class="pe-3 ps-px sm:px-3 md:py-4 text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300 cursor-pointer"
+  href="{{ site.baseurl }}/#services"
+  onclick="
+    if (window.location.pathname === '{{ site.baseurl }}/' || window.location.pathname === '{{ site.baseurl }}') {
+      event.preventDefault();
+      const el = document.getElementById('services');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }
+  "
+>
+  Services
+</a>
 
           <div class="hs-dropdown [--strategy:static] md:[--strategy:fixed] [--adaptive:none] md:[--adaptive:adaptive] [--is-collapse:true] md:[--is-collapse:false] pe-3 ps-px sm:px-3 md:py-4">
             <button id="hs-dropdown-floating-dark" type="button" class="hs-dropdown-toggle flex items-center w-full text-sm text-white hover:text-neutral-300 focus:outline-hidden focus:text-neutral-300" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
