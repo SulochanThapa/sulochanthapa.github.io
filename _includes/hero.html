@@ -1,4 +1,14 @@
- <!-- Hero -->
+ 
+ <style>
+/* filepath: d:\SulochanPersonal\portfolio\sulochanthapa.github.io\_includes\hero.html */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0);}
+  50% { transform: translateY(-8px);}
+}
+.animate-bounce-slow {
+  animation: bounce-slow 2.2s infinite;
+}
+</style><!-- Hero -->
     <div class="bg-neutral-900">
         <svg class="absolute -bottom-20 start-1/2 w-[1900px] transform -translate-x-1/2" width="2745" height="488" viewBox="0 0 2745 488" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.5 330.864C232.505 403.801 853.749 527.683 1482.69 439.719C2111.63 351.756 2585.54 434.588 2743.87 487" class="stroke-neutral-700/50" stroke="currentColor" />
@@ -18,16 +28,32 @@
         <path d="M0.5 22.991C232.505 95.9276 853.749 219.81 1482.69 131.846C2111.63 43.8824 2585.54 126.715 2743.87 179.127" class="stroke-neutral-700/50" stroke="currentColor" />
         <path d="M0.5 1C232.505 73.9367 853.749 197.819 1482.69 109.855C2111.63 21.8914 2585.54 104.724 2743.87 157.136" class="stroke-neutral-700/50" stroke="currentColor" />
       </svg>
-
-      <div class="max-w-5xl mx-auto px-4 xl:px-0 pt-24 lg:pt-32 pb-24 text-center">
-        <h1 class="font-semibold text-white text-5xl md:text-6xl">
-          <span class="text-[#ff0] ">Local Expert for Local Business:</span> Empowering Local Businesses
-        </h1>
-        <div>
-          <p class="mt-5 text-neutral-400 text-lg">
-            Discover how I can help your local business thrive online with tailored digital marketing strategies, SEO optimization, and website development. Let's connect and grow your business together!
-          </p>
+<div class="max-w-5xl mx-auto px-4 xl:px-0 pt-24 lg:pt-32 pb-24">
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-10">
+            <!-- Left: Text -->
+            <div class="flex-1 text-center lg:text-left">
+                <h1 class="font-semibold text-white text-5xl md:text-6xl">
+                    <span class="text-[#ff0]">Local Expert for Local Business:</span> Empowering Local Businesses
+                </h1>
+                <div>
+                    <p class="mt-5 text-neutral-400 text-lg">
+                        Discover how I can help your local business thrive online with tailored digital marketing strategies, SEO optimization, and website development. Let's connect and grow your business together!
+                    </p>
+                </div>
+                <div class="mt-8">
+                    <span class="inline-block bg-[#ff0] text-neutral-900 font-bold text-lg rounded-full px-6 py-2 shadow-md animate-bounce-slow">
+                        Hi, I am Sulochan Thapa
+                    </span>
+                </div>
+            </div>
+            <!-- Right: Image -->
+            <div class="flex-1 flex justify-center lg:justify-end mt-10 lg:mt-0">
+                <img src="https://avatars.githubusercontent.com/u/10441209?v=4"
+                     alt="Sulochan Thapa"
+                     class="w-56 h-56 rounded-full object-cover shadow-2xl border-4 border-[#ff0] bg-neutral-800"
+                     loading="lazy">
+            </div>
         </div>
-      </div>
+    </div>
     </div>
     <!-- End Hero -->
