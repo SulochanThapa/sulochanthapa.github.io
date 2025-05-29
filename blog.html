@@ -8,14 +8,15 @@ permalink: blog/
     <!-- Loop through blog posts -->
     <div class="space-y-8">
         {% for post in site.posts %}
-        <article class="p-6 border rounded-lg shadow-lg hover:shadow-xl transition">
+        <article class="group relative z-10 p-4 md:p-6 h-full flex flex-col bg-neutral-900 focus:outline-hidden first:rounded-t-xl last:rounded-b-xl lg:first:rounded-l-xl lg:first:rounded-tr-none lg:last:rounded-r-xl lg:last:rounded-bl-none before:absolute before:inset-0 before:bg-linear-to-b hover:before:from-transparent hover:before:via-transparent hover:before:to-[#ff0]/10 before:via-80% focus:before:from-transparent focus:before:via-transparent focus:before:to-[#ff0]/10 before:-z-1 last:before:rounded-b-xl lg:first:before:rounded-s-xl lg:last:before:rounded-e-xl lg:last:before:rounded-bl-none before:opacity-0 hover:before:opacity-100 focus:before:opacity-100 border border-neutral-700">
             <h2 class="text-2xl font-bold">
-                <a href="{{ post.url|prepend: site.baseurl}}" class="text-blue-600 hover:underline">{{ post.title }}</a>
+                <a href="{{ post.url|prepend: site.baseurl}}" class="text-white hover:underline">{{ post.title }}</a>
             </h2>
             <p class="text-gray-500 text-sm">Published on {{ post.date | date: "%B %d, %Y" }} by {{ post.author }}</p>
-            <p class="mt-4 text-gray-700">{{ post.excerpt | strip_html }}...</p>
-            <a href="{{post.url|prepend: site.baseurl }}" class="mt-2 inline-block text-blue-600 font-semibold hover:underline">Read more →</a>
+            <p class="mt-4 text-neutral-400">{{ post.excerpt | strip_html }}...</p>
+            <a href="{{post.url|prepend: site.baseurl }}" class="mt-2 inline-block text-white font-semibold hover:underline">Read more →</a>
         </article>
+        
         {% endfor %}
     </div>
 </section>
