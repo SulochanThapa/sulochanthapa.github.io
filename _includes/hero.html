@@ -1,6 +1,4 @@
- 
- <style>
-/* filepath: d:\SulochanPersonal\portfolio\sulochanthapa.github.io\_includes\hero.html */
+<style>
 @keyframes bounce-slow {
   0%, 100% { transform: translateY(0);}
   50% { transform: translateY(-8px);}
@@ -8,7 +6,24 @@
 .animate-bounce-slow {
   animation: bounce-slow 2.2s infinite;
 }
-</style><!-- Hero -->
+.hero-glow {
+  box-shadow: 0 0 80px 0 #fff70033, 0 4px 32px 0 #0004;
+  background: linear-gradient(135deg, #fffde4 0%, #f7f7ff 100%);
+}
+.dark .hero-glow {
+  background: linear-gradient(135deg, #23272f 0%, #23272f 100%);
+  box-shadow: 0 0 80px 0 #fff70033, 0 4px 32px 0 #0008;
+}
+.hero-glass {
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(8px);
+}
+.dark .hero-glass {
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(12px);
+}
+</style>
+<!-- Hero -->
     <div class="bg-neutral-900">
         <svg class="absolute -bottom-20 start-1/2 w-[1900px] transform -translate-x-1/2" width="2745" height="488" viewBox="0 0 2745 488" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.5 330.864C232.505 403.801 853.749 527.683 1482.69 439.719C2111.63 351.756 2585.54 434.588 2743.87 487" class="stroke-neutral-700/50" stroke="currentColor" />
@@ -28,8 +43,8 @@
         <path d="M0.5 22.991C232.505 95.9276 853.749 219.81 1482.69 131.846C2111.63 43.8824 2585.54 126.715 2743.87 179.127" class="stroke-neutral-700/50" stroke="currentColor" />
         <path d="M0.5 1C232.505 73.9367 853.749 197.819 1482.69 109.855C2111.63 21.8914 2585.54 104.724 2743.87 157.136" class="stroke-neutral-700/50" stroke="currentColor" />
       </svg>
-<div class="max-w-5xl mx-auto px-4 xl:px-0 pt-24 lg:pt-32 pb-24">
-        <div class="flex flex-col lg:flex-row items-center justify-between gap-10">
+<div class="relative max-w-5xl mx-auto px-4 xl:px-0 pt-24 lg:pt-32 pb-24">
+    <div class="hero-glow hero-glass rounded-3xl shadow-2xl border border-yellow-200/40 dark:border-yellow-400/10 p-10 md:p-16 flex flex-col lg:flex-row items-center justify-between gap-10">
         <!-- Left: Text (80%) -->
         <div class="flex-1 text-left md:text-left">
                 <div>
