@@ -8,7 +8,7 @@
         {% for post in site.posts limit:3 %}
         <article class="group relative overflow-hidden rounded-xl shadow-lg transition-transform transform hover:scale-105 hover:shadow-2xl">
           <div class="relative h-56 w-full">
-            <img src="{{site.baseurl}}/assets/images/{{ post.image|default:'Orchid1.webp' }}" alt="{{ post.title }}" class="h-full w-full object-cover transition-opacity group-hover:opacity-75">
+            <img src="{{site.baseurl}}/assets/images/{{ post.image|default:'cd_logo.svg' }}" alt="{{ post.title }}" class="h-full w-full object-cover transition-opacity group-hover:opacity-75">
             <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all"></div>
           </div>
           <div class="p-5 bg-white dark:bg-gray-800">
