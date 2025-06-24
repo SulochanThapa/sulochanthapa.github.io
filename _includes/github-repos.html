@@ -21,7 +21,7 @@
     // Replace with your GitHub username
     const username = 'sulochanthapa';
     
-    fetch(`https://api.github.com/users/${username}/repos?sort=updated&per_page=6`)
+    fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=6`)
       .then(response => response.json())
       .then(repos => {
         const reposContainer = document.getElementById('github-repos');
