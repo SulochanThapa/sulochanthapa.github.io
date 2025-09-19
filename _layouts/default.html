@@ -31,7 +31,7 @@
   <link rel="shortcut icon" href="{{ site.baseurl }}/favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="{{ site.baseurl }}/assets/images/cd_logo.svg" type="image/svg+xml" />
-
+<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
 <link rel="apple-touch-icon" href="{{ site.baseurl }}/assets/images/apple-touch-icon.png" />
 
 <link rel="manifest" href="{{ site.baseurl }}/manifest.webmanifest" />
@@ -83,5 +83,12 @@ class="fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p-
   <!-- JS PLUGINS -->
   <script src="https://cdn.jsdelivr.net/npm/preline/dist/index.js"></script>
 
+<script type="module">
+	import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
+
+	createChat({
+		webhookUrl: 'http://n8n-rosk8ww0ssoc4g4kc4wos8sg.155.248.250.27.sslip.io:5678/webhook/d7e795ae-04ee-4727-8cc1-3a5cddabf7e0/chat'
+	});
+</script>
 </body>
 </html>
