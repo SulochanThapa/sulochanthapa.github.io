@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All-in-One Converter & Minifier</title>
+    <title>All-in-One Toolkit</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -30,6 +30,55 @@
             background: #4f46e5; border-radius: 50%;
             cursor: pointer;
         }
+        
+        /* --- Magic Wand Animations --- */
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(-10deg); }
+            50% { transform: scale(1.2) rotate(10deg); }
+        }
+        .animate-sparkle {
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 0 2px rgba(253, 224, 71, 0.7)); }
+            50% { filter: drop-shadow(0 0 8px rgba(253, 224, 71, 1)); }
+        }
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite;
+        }
+
+        @keyframes magic-dust {
+            0% { transform: translate(0, 0) scale(0); opacity: 1; }
+            100% { transform: translate(var(--x, 0), var(--y, 0)) scale(1); opacity: 0; }
+        }
+        .sparkle-dust {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: #fde047; /* yellow-300 */
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            animation: magic-dust 1.2s ease-out infinite;
+        }
+
+        /* --- Sidebar Popup Animation --- */
+        @keyframes popup-intro {
+            0% { transform: translateX(10px) scale(0.9); opacity: 0; }
+            70% { transform: translateX(-5px) scale(1.05); opacity: 1; }
+            100% { transform: translateX(0) scale(1); opacity: 1; }
+        }
+        .popup-hidden {
+            display: none;
+            opacity: 0;
+        }
+        .animate-popup-intro {
+            display: block;
+            animation: popup-intro 0.5s ease-out forwards;
+        }
     </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen py-10">
@@ -37,8 +86,8 @@
         <!-- Main application card -->
         <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div class="p-6 md:p-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">All-in-One Converter & Minifier</h1>
-                <p class="text-center text-gray-500 mb-8">Encode, Decode, Convert, and Minify files with a single tool.</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">All-in-One Toolkit</h1>
+                <p class="text-center text-gray-500 mb-8">Encode, Decode, Convert, Minify, and Analyze with a single tool.</p>
 
                 <!-- Tab navigation -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8 bg-gray-100 p-1 rounded-lg">
@@ -53,7 +102,6 @@
             <div class="p-6 md:p-8 pt-0">
                 <!-- Encode Tab -->
                 <div id="encode" class="tab-content active space-y-6">
-                    <!-- ... existing encode tab content ... -->
                     <h2 class="font-bold text-lg text-gray-700">Encode to Base64</h2>
                     <div>
                         <label for="encode-type" class="block text-sm font-medium text-gray-700 mb-2">Choose Input Type</label>
@@ -97,7 +145,6 @@
                 
                 <!-- Decode Tab -->
                 <div id="decode" class="tab-content space-y-6">
-                    <!-- ... existing decode tab content ... -->
                      <h2 class="font-bold text-lg text-gray-700">Decode from Base64</h2>
                     <div>
                          <label for="decode-input" class="block text-sm font-medium text-gray-700 mb-2">Base64 to Decode</label>
@@ -135,7 +182,6 @@
 
                 <!-- Image Format Converter -->
                 <div id="image-converter" class="tab-content space-y-6">
-                    <!-- ... existing image converter content ... -->
                     <h2 class="font-bold text-lg text-gray-700">Image Format Converter</h2>
                     <div>
                         <label for="image-converter-input" class="block text-sm font-medium text-gray-700 mb-2">Upload Image (JPG, PNG, WebP)</label>
@@ -168,7 +214,7 @@
                     </div>
                 </div>
 
-                <!-- NEW: Image Minifier Tab -->
+                <!-- Image Minifier Tab -->
                 <div id="image-minifier" class="tab-content space-y-6">
                     <h2 class="font-bold text-lg text-gray-700">Image Minifier & Resizer</h2>
                     <div>
@@ -220,6 +266,61 @@
         </footer>
     </div>
 
+    <!-- Sidebar Toggle Button with Magic Dust Effect -->
+    <div class="fixed top-1/2 -translate-y-1/2 right-0 z-20 group">
+        <button id="sidebar-toggle" class="relative bg-indigo-600 text-white p-3 rounded-l-full shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-transform transform hover:scale-105">
+            <div class="relative h-6 w-6">
+                <!-- Hamburger Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h7" />
+                </svg>
+                <!-- Magic Wand Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute -top-2 -right-3 text-yellow-300 animate-sparkle animate-glow origin-bottom-right" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M9.25,2.5C9.66,2.5 10,2.84 10,3.25V5.11L11.89,6.11C12.3,6.34 12.5,6.81 12.28,7.22L10.39,10.39L13.61,13.61L16.78,11.72C17.19,11.5 17.66,11.7 17.89,12.11L18.89,13.89V16.75C18.89,17.16 18.55,17.5 18.14,17.5C17.74,17.5 17.39,17.16 17.39,16.75V15.39L16.39,14.61L13.17,17.83L14.61,18.61L15.39,17.39H16.75C17.16,17.39 17.5,17.74 17.5,18.14C17.5,18.55 17.16,18.89 16.75,18.89H13.89L12.11,17.89C11.7,17.66 11.5,17.19 11.72,16.78L13.61,13.61L10.39,10.39L7.22,12.28C6.81,12.5 6.34,12.3 6.11,11.89L5.11,10.11V6.75C5.11,6.34 5.45,6 5.86,6C6.26,6 6.61,6.34 6.61,6.75V8.61L7.61,9.39L10.83,6.17L9.39,5.39L8.61,6.61V3.25C8.61,2.84 8.95,2.5 9.25,2.5M3.5,6.5C3.5,7.05 3.95,7.5 4.5,7.5C5.05,7.5 5.5,7.05 5.5,6.5C5.5,5.95 5.05,5.5 4.5,5.5C3.95,5.5 3.5,5.95 3.5,6.5M2,12C2,12.55 2.45,13 3,13C3.55,13 4,12.55 4,12C4,11.45 3.55,11 3,11C2.45,11 2,11.45 2,12M5.5,17.5C5.5,18.05 5.05,18.5 4.5,18.5C3.95,18.5 3.5,18.05 3.5,17.5C3.5,16.95 3.95,16.5 4.5,16.5C5.05,16.5 5.5,16.95 5.5,17.5M16.5,5.5C16.5,4.95 16.95,4.5 17.5,4.5C18.05,4.5 18.5,4.95 18.5,5.5C18.5,6.05 18.05,6.5 17.5,6.5C16.95,6.5 16.5,6.05 16.5,5.5M20,11C19.45,11 19,11.45 19,12C19,12.55 19.45,13 20,13C20.55,13 21,12.55 21,12C21,11.45 20.55,11 20,11M18.5,16.5C18.5,16.95 18.05,17.5 17.5,17.5C16.95,17.5 16.5,16.95 16.5,16.5C16.5,15.95 16.95,15.5 17.5,15.5C18.05,15.5 18.5,15.95 18.5,16.5Z" />
+                </svg>
+            </div>
+        </button>
+        <!-- Magic Dust Particles -->
+        <div class="absolute top-1/2 left-1/2 w-full h-full pointer-events-none">
+            <div class="sparkle-dust" style="--x:-20px; --y:-30px; animation-delay: 0s;"></div>
+            <div class="sparkle-dust" style="--x:15px; --y:-25px; animation-delay: 0.2s;"></div>
+            <div class="sparkle-dust" style="--x:25px; --y:10px; animation-delay: 0.4s;"></div>
+            <div class="sparkle-dust" style="--x:-5px; --y:25px; animation-delay: 0.6s;"></div>
+            <div class="sparkle-dust" style="--x:-25px; --y:-5px; animation-delay: 0.8s;"></div>
+            <div class="sparkle-dust" style="--x:5px; --y:-20px; animation-delay: 1s;"></div>
+        </div>
+        <!-- Sidebar Awareness Popup -->
+        <div id="sidebar-popup" class="absolute top-1/2 -translate-y-1/2 right-full mr-3 w-max bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-lg shadow-lg popup-hidden">
+            Psst! Check out the extra tools!
+            <div class="absolute top-1/2 -translate-y-1/2 -right-2 w-0 h-0 border-t-8 border-t-transparent border-b-8 border-b-transparent border-l-8 border-l-indigo-600"></div>
+        </div>
+    </div>
+
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-xl z-40 transform translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Sidebar Header -->
+        <div class="p-4 flex justify-between items-center border-b bg-gray-50">
+            <h3 class="text-lg font-bold text-gray-800">Text Analyzer</h3>
+            <button id="sidebar-close" class="text-gray-500 hover:text-gray-800 text-3xl leading-none">&times;</button>
+        </div>
+        <!-- Sidebar Content -->
+        <div class="p-4 space-y-4">
+            <label for="text-counter-input" class="block text-sm font-medium text-gray-700">Enter your text below:</label>
+            <textarea id="text-counter-input" rows="8" class="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-indigo-500 transition"></textarea>
+            <!-- Stats Display -->
+            <div id="text-stats" class="grid grid-cols-2 gap-3 text-sm text-gray-700">
+                <div class="bg-gray-100 p-3 rounded-md">Words: <span id="word-count" class="font-bold text-gray-900 block text-lg">0</span></div>
+                <div class="bg-gray-100 p-3 rounded-md">Characters: <span id="char-count" class="font-bold text-gray-900 block text-lg">0</span></div>
+                <div class="bg-gray-100 p-3 rounded-md">Sentences: <span id="sentence-count" class="font-bold text-gray-900 block text-lg">0</span></div>
+                <div class="bg-gray-100 p-3 rounded-md">Paragraphs: <span id="paragraph-count" class="font-bold text-gray-900 block text-lg">0</span></div>
+            </div>
+        </div>
+    </div>
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
+
     <script>
         // --- Global Utils ---
         const messageBox = document.getElementById('messageBox');
@@ -256,7 +357,6 @@
         });
         
         // --- Encoder Logic ---
-        // ... existing encoder logic ...
         const encodeType = document.getElementById('encode-type');
         const encodeBtn = document.getElementById('encode-btn');
         const encodeOutput = document.getElementById('encode-output');
@@ -325,7 +425,6 @@
         });
         
         // --- Decoder Logic ---
-        // ... existing decoder logic ...
         const decodeType = document.getElementById('decode-type');
         const decodeBtn = document.getElementById('decode-btn');
         const decodeInput = document.getElementById('decode-input');
@@ -383,7 +482,6 @@
 
 
         // --- Image Format Converter Logic ---
-        // ... existing image converter logic ...
         const imageConverterInput = document.getElementById('image-converter-input');
         const imageConverterFormat = document.getElementById('image-converter-format');
         const jpegQualityContainer = document.getElementById('jpeg-quality-container');
@@ -435,7 +533,7 @@
             reader.readAsDataURL(originalConverterFile);
         });
 
-        // --- NEW: Image Minifier Logic ---
+        // --- Image Minifier Logic ---
         const minifierInput = document.getElementById('minifier-input');
         const minifierScale = document.getElementById('minifier-scale');
         const minifierScaleValue = document.getElementById('minifier-scale-value');
@@ -527,7 +625,6 @@
                     ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
                     
                     const mimeType = originalMinifierFile.type;
-                    // For lossless PNG/WebP, no quality param. For JPEG, use high quality.
                     const quality = (mimeType === 'image/jpeg') ? 0.92 : 1.0;
                     
                     canvas.toBlob(blob => {
@@ -543,7 +640,6 @@
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
-                        // URL.revokeObjectURL(dataUrl) shouldn't be called immediately if it's used by the preview src
                         showMessage(`Successfully minified and downloaded image!`, 'green');
 
                     }, mimeType, quality);
@@ -553,6 +649,64 @@
             reader.readAsDataURL(originalMinifierFile);
         });
 
+        // --- Sidebar Logic ---
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarClose = document.getElementById('sidebar-close');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        const textCounterInput = document.getElementById('text-counter-input');
+        const sidebarPopup = document.getElementById('sidebar-popup');
+
+        const openSidebar = () => {
+            sidebar.classList.remove('translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+            // Hide popup permanently once the sidebar is opened
+            sidebarPopup.style.display = 'none';
+            sessionStorage.setItem('sidebarPopupShown', 'true');
+        };
+
+        const closeSidebar = () => {
+            sidebar.classList.add('translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        };
+
+        sidebarToggle.addEventListener('click', openSidebar);
+        sidebarClose.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // --- Text Analyzer Logic ---
+        textCounterInput.addEventListener('input', () => {
+            const text = textCounterInput.value;
+            
+            const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            const characters = text.length;
+            const sentences = (text.match(/[\w|)][.?!](\s|$)/g) || []).length;
+            const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim() !== '').length;
+
+            document.getElementById('word-count').textContent = words;
+            document.getElementById('char-count').textContent = characters;
+            document.getElementById('sentence-count').textContent = sentences;
+            document.getElementById('paragraph-count').textContent = paragraphs;
+        });
+
+        // --- Sidebar Popup Logic ---
+        if (!sessionStorage.getItem('sidebarPopupShown')) {
+            // Show popup after 2.5 seconds
+            setTimeout(() => {
+                sidebarPopup.classList.remove('popup-hidden');
+                sidebarPopup.classList.add('animate-popup-intro');
+
+                // Hide popup after another 6 seconds
+                setTimeout(() => {
+                    sidebarPopup.style.opacity = '0';
+                    sidebarPopup.style.transition = 'opacity 0.5s';
+                    setTimeout(() => {
+                       sidebarPopup.style.display = 'none';
+                    }, 500);
+                }, 6000);
+
+            }, 2500);
+        }
 
         // Initialize default views
         document.querySelector('[data-tab="encode"]').click();
