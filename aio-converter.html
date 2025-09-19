@@ -11,6 +11,9 @@
     <!-- Document Converter Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-docx-js@0.3.1/dist/html-docx.min.js"></script>
+    <!-- HTML to PDF Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -85,7 +88,7 @@
     </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen py-10">
-    <div class="container mx-auto p-4 max-w-4xl w-full">
+    <div class="container mx-auto p-4 max-w-5xl w-full">
         <!-- Main application card -->
         <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div class="p-6 md:p-8">
@@ -93,12 +96,13 @@
                 <p class="text-center text-gray-500 mb-8">Encode, Decode, Convert Documents & Images, Minify, and Analyze.</p>
 
                 <!-- Tab navigation -->
-                <div class="grid grid-cols-3 md:grid-cols-5 gap-2 mb-8 bg-gray-100 p-1 rounded-lg">
+                <div class="grid grid-cols-3 md:grid-cols-6 gap-2 mb-8 bg-gray-100 p-1 rounded-lg">
                     <button class="tab-btn active text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="encode">Base64 Encode</button>
                     <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="decode">Base64 Decode</button>
                     <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="image-converter">Image Converter</button>
                     <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="image-minifier">Image Minifier</button>
                     <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="doc-converter">Doc Converter</button>
+                    <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="html-to-pdf">HTML to PDF</button>
                 </div>
             </div>
 
@@ -290,6 +294,35 @@
                     </div>
                 </div>
 
+                <!-- HTML to PDF Converter Tab -->
+                <div id="html-to-pdf" class="tab-content space-y-6">
+                    <h2 class="font-bold text-lg text-gray-700">HTML to PDF Converter</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Input Side -->
+                        <div class="space-y-4">
+                            <div>
+                                <label for="html-to-pdf-input" class="block text-sm font-medium text-gray-700 mb-2">HTML Content</label>
+                                <textarea id="html-to-pdf-input" rows="10" class="w-full p-3 border border-gray-300 rounded-md shadow-sm font-mono text-sm" placeholder="<html>...</html>"><h1>My Document</h1><p>This is a paragraph with some <strong>bold text</strong> and <em>italic text</em>.</p><ul><li>List item 1</li><li>List item 2</li></ul></textarea>
+                            </div>
+                            <div>
+                                <label for="html-to-pdf-filename" class="block text-sm font-medium text-gray-700 mb-2">PDF Filename</label>
+                                <input type="text" id="html-to-pdf-filename" class="w-full p-3 border border-gray-300 rounded-md shadow-sm" value="converted.pdf">
+                            </div>
+                            <button id="html-to-pdf-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition shadow-md flex items-center justify-center">
+                                <svg id="pdf-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Convert & Download PDF
+                            </button>
+                        </div>
+                        <!-- Preview Side -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Live Preview</label>
+                            <iframe id="html-preview" class="w-full h-96 border border-gray-300 rounded-md shadow-sm bg-white"></iframe>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Global Message Box -->
                 <div id="messageBox" class="mt-6 text-center text-sm font-medium h-5"></div>
@@ -816,12 +849,113 @@
             setTimeout(() => { docxCopyBtn.textContent = originalText; }, 2000);
         });
 
+        // --- HTML to PDF Converter Logic ---
+        const htmlToPdfInput = document.getElementById('html-to-pdf-input');
+        const htmlPreview = document.getElementById('html-preview');
+        const htmlToPdfBtn = document.getElementById('html-to-pdf-btn');
+        const pdfSpinner = document.getElementById('pdf-spinner');
+
+        const updatePreview = () => {
+            htmlPreview.srcdoc = htmlToPdfInput.value;
+        };
+        htmlToPdfInput.addEventListener('input', updatePreview);
+        
+        htmlToPdfBtn.addEventListener('click', () => {
+            const htmlContent = htmlToPdfInput.value;
+            const fileName = document.getElementById('html-to-pdf-filename').value || 'converted.pdf';
+
+            if (!htmlContent.trim()) {
+                showMessage('Please enter some HTML content to convert.', 'red');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+
+            // Create a temporary, off-screen container for rendering to get accurate dimensions
+            const renderContainer = document.createElement('div');
+            renderContainer.style.position = 'absolute';
+            renderContainer.style.left = '-9999px'; // Move it off-screen
+            renderContainer.style.width = '210mm'; // Standard A4 width
+            renderContainer.style.background = 'white';
+            
+            // Add a basic stylesheet to ensure default styles are applied for rendering
+            const styledHtmlContent = `
+                <style>
+                    body { font-family: 'Inter', sans-serif; color: #111827; }
+                    h1, h2, h3, h4, h5, h6, b, strong { font-weight: 700; }
+                    h1 { font-size: 2em; } h2 { font-size: 1.5em; } h3 { font-size: 1.17em; }
+                    p { margin: 1em 0; }
+                    ul, ol { padding-left: 40px; }
+                    i, em { font-style: italic; }
+                </style>
+                ${htmlContent}
+            `;
+            renderContainer.innerHTML = styledHtmlContent;
+            document.body.appendChild(renderContainer);
+
+
+            pdfSpinner.classList.remove('hidden');
+            htmlToPdfBtn.disabled = true;
+            htmlToPdfBtn.classList.add('opacity-75', 'cursor-not-allowed');
+            showMessage('Generating PDF, please wait...', 'indigo');
+
+            html2canvas(renderContainer, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({
+                    orientation: 'p',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                const canvasWidth = canvas.width;
+                const canvasHeight = canvas.height;
+                const ratio = canvasWidth / canvasHeight;
+                const imgWidth = pdfWidth - 20; // with margin
+                const imgHeight = imgWidth / ratio;
+                
+                let heightLeft = imgHeight;
+                let position = 10; // top margin
+
+                pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                heightLeft -= (pdfHeight - 20);
+
+                while (heightLeft > 0) {
+                    position = - (imgHeight - heightLeft) + 10;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= (pdfHeight - 20);
+                }
+
+                pdf.save(fileName.endsWith('.pdf') ? fileName : `${fileName}.pdf`);
+                showMessage('PDF downloaded successfully!', 'green');
+
+            }).catch(err => {
+                showMessage(`Error generating PDF: ${err.message}`, 'red');
+                console.error("PDF Generation Error:", err);
+            }).finally(() => {
+                document.body.removeChild(renderContainer); // Clean up the temporary container
+                pdfSpinner.classList.add('hidden');
+                htmlToPdfBtn.disabled = false;
+                htmlToPdfBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+            });
+        });
+
 
         // Initialize default views
         document.querySelector('[data-tab="encode"]').click();
         encodeType.dispatchEvent(new Event('change'));
         decodeType.dispatchEvent(new Event('change'));
+        updatePreview(); // Initial preview for PDF converter
     </script>
 </body>
 </html>
+
+
+
 
