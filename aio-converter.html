@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All-in-One Base64 & Image Converter</title>
+    <title>All-in-One Converter & Minifier</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter -->
@@ -33,18 +33,19 @@
     </style>
 </head>
 <body class="bg-gray-50 flex items-center justify-center min-h-screen py-10">
-    <div class="container mx-auto p-4 max-w-3xl w-full">
+    <div class="container mx-auto p-4 max-w-4xl w-full">
         <!-- Main application card -->
         <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
             <div class="p-6 md:p-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">All-in-One Converter</h1>
-                <p class="text-center text-gray-500 mb-8">Encode, Decode, and Convert files with a single tool.</p>
+                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">All-in-One Converter & Minifier</h1>
+                <p class="text-center text-gray-500 mb-8">Encode, Decode, Convert, and Minify files with a single tool.</p>
 
                 <!-- Tab navigation -->
-                <div class="grid grid-cols-3 gap-2 mb-8 bg-gray-100 p-1 rounded-lg">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-8 bg-gray-100 p-1 rounded-lg">
                     <button class="tab-btn active text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="encode">Base64 Encode</button>
                     <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="decode">Base64 Decode</button>
                     <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="image-converter">Image Converter</button>
+                    <button class="tab-btn text-sm font-semibold py-2 px-3 rounded-md transition-colors duration-200" data-tab="image-minifier">Image Minifier</button>
                 </div>
             </div>
 
@@ -52,6 +53,7 @@
             <div class="p-6 md:p-8 pt-0">
                 <!-- Encode Tab -->
                 <div id="encode" class="tab-content active space-y-6">
+                    <!-- ... existing encode tab content ... -->
                     <h2 class="font-bold text-lg text-gray-700">Encode to Base64</h2>
                     <div>
                         <label for="encode-type" class="block text-sm font-medium text-gray-700 mb-2">Choose Input Type</label>
@@ -95,7 +97,8 @@
                 
                 <!-- Decode Tab -->
                 <div id="decode" class="tab-content space-y-6">
-                    <h2 class="font-bold text-lg text-gray-700">Decode from Base64</h2>
+                    <!-- ... existing decode tab content ... -->
+                     <h2 class="font-bold text-lg text-gray-700">Decode from Base64</h2>
                     <div>
                          <label for="decode-input" class="block text-sm font-medium text-gray-700 mb-2">Base64 to Decode</label>
                         <textarea id="decode-input" rows="5" class="w-full p-3 border border-gray-300 rounded-md shadow-sm" placeholder="Paste your Base64 string here..."></textarea>
@@ -132,6 +135,7 @@
 
                 <!-- Image Format Converter -->
                 <div id="image-converter" class="tab-content space-y-6">
+                    <!-- ... existing image converter content ... -->
                     <h2 class="font-bold text-lg text-gray-700">Image Format Converter</h2>
                     <div>
                         <label for="image-converter-input" class="block text-sm font-medium text-gray-700 mb-2">Upload Image (JPG, PNG, WebP)</label>
@@ -163,6 +167,49 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- NEW: Image Minifier Tab -->
+                <div id="image-minifier" class="tab-content space-y-6">
+                    <h2 class="font-bold text-lg text-gray-700">Image Minifier & Resizer</h2>
+                    <div>
+                        <label for="minifier-input" class="block text-sm font-medium text-gray-700 mb-2">Upload Image (JPG, PNG, WebP)</label>
+                        <input type="file" id="minifier-input" accept="image/jpeg,image/png,image/webp" class="w-full p-2 border border-gray-300 rounded-md">
+                    </div>
+                    <!-- Minifier Controls -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border rounded-lg">
+                        <div>
+                            <label for="minifier-scale" class="block text-sm font-medium text-gray-700 mb-2">Resize by Percentage: <span id="minifier-scale-value">100</span>%</label>
+                            <input type="range" id="minifier-scale" min="1" max="100" step="1" value="100" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-2">
+                                <label for="minifier-width" class="text-sm font-medium text-gray-700">W:</label>
+                                <input type="number" id="minifier-width" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="Width">
+                                <label for="minifier-height" class="text-sm font-medium text-gray-700">H:</label>
+                                <input type="number" id="minifier-height" class="w-full p-2 border border-gray-300 rounded-md shadow-sm" placeholder="Height">
+                            </div>
+                            <div class="flex items-center">
+                                <input id="minifier-aspect-ratio" type="checkbox" class="h-4 w-4 text-indigo-600 border-gray-300 rounded" checked>
+                                <label for="minifier-aspect-ratio" class="ml-2 block text-sm text-gray-900">Maintain aspect ratio</label>
+                            </div>
+                        </div>
+                    </div>
+                     <button id="minifier-btn" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition-transform transform hover:scale-105 shadow-md">Minify & Download Image</button>
+                    <!-- Minifier Previews -->
+                    <div id="minifier-preview-container" class="hidden grid-cols-1 sm:grid-cols-2 gap-4 text-center">
+                        <div>
+                            <h3 class="font-semibold mb-2">Original</h3>
+                            <img id="minifier-original-preview" class="max-w-full h-auto mx-auto rounded-md border bg-gray-50 p-1 shadow-sm" alt="Original Preview">
+                            <p id="minifier-original-size" class="text-sm text-gray-500 mt-2"></p>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold mb-2">Minified</h3>
+                             <img id="minifier-minified-preview" class="max-w-full h-auto mx-auto rounded-md border bg-gray-50 p-1 shadow-sm" alt="Minified Preview">
+                             <p id="minifier-minified-size" class="text-sm text-gray-500 mt-2"></p>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Global Message Box -->
                 <div id="messageBox" class="mt-6 text-center text-sm font-medium h-5"></div>
             </div>
@@ -187,6 +234,14 @@
             const originalText = button.textContent; button.textContent = 'Copied!';
             setTimeout(() => { button.textContent = originalText; }, 2000);
         };
+        const formatBytes = (bytes, decimals = 2) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        };
 
         // --- Tab Switching ---
         const tabButtons = document.querySelectorAll('.tab-btn');
@@ -201,6 +256,7 @@
         });
         
         // --- Encoder Logic ---
+        // ... existing encoder logic ...
         const encodeType = document.getElementById('encode-type');
         const encodeBtn = document.getElementById('encode-btn');
         const encodeOutput = document.getElementById('encode-output');
@@ -212,7 +268,6 @@
             file: document.getElementById('encode-file-input')
         };
         const fileValue = document.getElementById('encode-file-value');
-        
         encodeType.addEventListener('change', () => {
             Object.values(encodeInputs).forEach(input => input.classList.remove('active'));
             const type = encodeType.value;
@@ -224,14 +279,11 @@
                 encodeInputs[type].classList.add('active');
             }
         });
-        
         encodeCopyBtn.addEventListener('click', () => copyToClipboard(encodeOutput, encodeCopyBtn));
-
         encodeBtn.addEventListener('click', () => {
             const type = encodeType.value;
             const useUrlSafe = encodeUrlSafeCheckbox.checked;
             encodeOutput.value = '';
-            
             const processAndSetOutput = (base64) => {
                 if (useUrlSafe) {
                     encodeOutput.value = base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -239,7 +291,6 @@
                     encodeOutput.value = base64;
                 }
             };
-
             try {
                 if (type === 'text') {
                     const text = document.getElementById('encode-text-value').value;
@@ -265,7 +316,7 @@
                         showMessage('File encoded successfully!', 'green');
                     };
                     reader.readAsDataURL(file);
-                    return; // Return because file reading is async
+                    return; 
                 }
                 showMessage('Encoded successfully!', 'green');
             } catch (e) {
@@ -274,19 +325,18 @@
         });
         
         // --- Decoder Logic ---
+        // ... existing decoder logic ...
         const decodeType = document.getElementById('decode-type');
         const decodeBtn = document.getElementById('decode-btn');
         const decodeInput = document.getElementById('decode-input');
         const decodeUrlSafeCheckbox = document.getElementById('decode-url-safe');
         const decodeTextOutputContainer = document.getElementById('decode-text-output-container');
         const decodeFileOutputContainer = document.getElementById('decode-file-output-container');
-
         decodeType.addEventListener('change', () => {
             const isFile = !['text', 'hex'].includes(decodeType.value);
             decodeTextOutputContainer.classList.toggle('active', !isFile);
             decodeFileOutputContainer.classList.toggle('active', isFile);
         });
-
         decodeBtn.addEventListener('click', () => {
             let base64 = decodeInput.value.trim();
             if (!base64) { showMessage('Please enter a Base64 string to decode.', 'red'); return; }
@@ -294,11 +344,8 @@
             const isUrlSafe = decodeUrlSafeCheckbox.checked;
             if (isUrlSafe) {
                 base64 = base64.replace(/-/g, '+').replace(/_/g, '/');
-                while (base64.length % 4) {
-                    base64 += '=';
-                }
+                while (base64.length % 4) { base64 += '='; }
             }
-
             const type = decodeType.value;
             try {
                 const binary = atob(base64);
@@ -318,7 +365,6 @@
                     const len = binary.length;
                     const bytes = new Uint8Array(len);
                     for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-                    
                     const mimeMap = { pdf: 'application/pdf', image: 'image/png', audio: 'audio/mpeg', video: 'video/mp4', file: 'application/octet-stream' };
                     const blob = new Blob([bytes], { type: mimeMap[type] });
                     const link = document.createElement('a');
@@ -336,7 +382,8 @@
         });
 
 
-        // --- Image Format Converter Logic (from previous version) ---
+        // --- Image Format Converter Logic ---
+        // ... existing image converter logic ...
         const imageConverterInput = document.getElementById('image-converter-input');
         const imageConverterFormat = document.getElementById('image-converter-format');
         const jpegQualityContainer = document.getElementById('jpeg-quality-container');
@@ -346,14 +393,13 @@
         const imageConverterPreviewContainer = document.getElementById('image-converter-preview-container');
         const originalPreview = document.getElementById('image-converter-original-preview');
         const convertedPreview = document.getElementById('image-converter-converted-preview');
-        let originalFile = null; let originalFileName = '';
-
+        let originalConverterFile = null; let originalConverterFileName = '';
         imageConverterFormat.addEventListener('change', () => jpegQualityContainer.classList.toggle('hidden', imageConverterFormat.value !== 'jpeg'));
         jpegQualitySlider.addEventListener('input', () => jpegQualityValue.textContent = jpegQualitySlider.value);
         imageConverterInput.addEventListener('change', (e) => {
-            originalFile = e.target.files[0];
-            if (!originalFile) return;
-            originalFileName = originalFile.name.split('.').slice(0, -1).join('.');
+            originalConverterFile = e.target.files[0];
+            if (!originalConverterFile) return;
+            originalConverterFileName = originalConverterFile.name.split('.').slice(0, -1).join('.');
             const reader = new FileReader();
             reader.onload = (event) => {
                 originalPreview.src = event.target.result;
@@ -361,10 +407,10 @@
                 imageConverterPreviewContainer.classList.add('grid');
                 convertedPreview.src = "https://placehold.co/600x400/f3f4f6/9ca3af?text=Converted+Image";
             };
-            reader.readAsDataURL(originalFile);
+            reader.readAsDataURL(originalConverterFile);
         });
         imageConverterBtn.addEventListener('click', () => {
-            if (!originalFile) { showMessage('Please upload an image first.', 'red'); return; }
+            if (!originalConverterFile) { showMessage('Please upload an image first.', 'red'); return; }
             const reader = new FileReader();
             reader.onload = (event) => {
                 const img = new Image();
@@ -378,7 +424,7 @@
                     convertedPreview.src = dataUrl;
                     const link = document.createElement('a');
                     link.href = dataUrl;
-                    link.download = `${originalFileName}.${format}`;
+                    link.download = `${originalConverterFileName}.${format}`;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -386,14 +432,132 @@
                 };
                 img.src = event.target.result;
             };
-            reader.readAsDataURL(originalFile);
+            reader.readAsDataURL(originalConverterFile);
         });
+
+        // --- NEW: Image Minifier Logic ---
+        const minifierInput = document.getElementById('minifier-input');
+        const minifierScale = document.getElementById('minifier-scale');
+        const minifierScaleValue = document.getElementById('minifier-scale-value');
+        const minifierWidth = document.getElementById('minifier-width');
+        const minifierHeight = document.getElementById('minifier-height');
+        const minifierAspectRatio = document.getElementById('minifier-aspect-ratio');
+        const minifierBtn = document.getElementById('minifier-btn');
+        const minifierPreviewContainer = document.getElementById('minifier-preview-container');
+        const minifierOriginalPreview = document.getElementById('minifier-original-preview');
+        const minifierMinifiedPreview = document.getElementById('minifier-minified-preview');
+        const minifierOriginalSize = document.getElementById('minifier-original-size');
+        const minifierMinifiedSize = document.getElementById('minifier-minified-size');
+        
+        let originalMinifierFile = null;
+        let originalMinifierWidth = 0;
+        let originalMinifierHeight = 0;
+
+        minifierInput.addEventListener('change', (e) => {
+            originalMinifierFile = e.target.files[0];
+            if (!originalMinifierFile) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalMinifierWidth = img.width;
+                    originalMinifierHeight = img.height;
+                    minifierWidth.value = originalMinifierWidth;
+                    minifierHeight.value = originalMinifierHeight;
+                    minifierScale.value = 100;
+                    minifierScaleValue.textContent = 100;
+                };
+                img.src = event.target.result;
+
+                minifierOriginalPreview.src = event.target.result;
+                minifierOriginalSize.textContent = `Size: ${formatBytes(originalMinifierFile.size)}`;
+                minifierPreviewContainer.classList.remove('hidden');
+                minifierPreviewContainer.classList.add('grid');
+                minifierMinifiedPreview.src = "https://placehold.co/600x400/f3f4f6/9ca3af?text=Minified+Image";
+                minifierMinifiedSize.textContent = '';
+            };
+            reader.readAsDataURL(originalMinifierFile);
+        });
+
+        minifierScale.addEventListener('input', (e) => {
+            const scale = e.target.value / 100;
+            minifierScaleValue.textContent = e.target.value;
+            if (originalMinifierWidth) {
+                minifierWidth.value = Math.round(originalMinifierWidth * scale);
+                minifierHeight.value = Math.round(originalMinifierHeight * scale);
+            }
+        });
+
+        minifierWidth.addEventListener('input', () => {
+             if (minifierAspectRatio.checked && originalMinifierWidth) {
+                const ratio = originalMinifierHeight / originalMinifierWidth;
+                minifierHeight.value = Math.round(minifierWidth.value * ratio);
+             }
+        });
+
+        minifierHeight.addEventListener('input', () => {
+             if (minifierAspectRatio.checked && originalMinifierHeight) {
+                const ratio = originalMinifierWidth / originalMinifierHeight;
+                minifierWidth.value = Math.round(minifierHeight.value * ratio);
+             }
+        });
+
+        minifierBtn.addEventListener('click', () => {
+            if (!originalMinifierFile) {
+                showMessage('Please upload an image to minify.', 'red');
+                return;
+            }
+            
+            const targetWidth = parseInt(minifierWidth.value);
+            const targetHeight = parseInt(minifierHeight.value);
+            if (!targetWidth || !targetHeight || targetWidth <= 0 || targetHeight <= 0) {
+                 showMessage('Please enter valid dimensions for resizing.', 'red');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = targetWidth;
+                    canvas.height = targetHeight;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                    
+                    const mimeType = originalMinifierFile.type;
+                    // For lossless PNG/WebP, no quality param. For JPEG, use high quality.
+                    const quality = (mimeType === 'image/jpeg') ? 0.92 : 1.0;
+                    
+                    canvas.toBlob(blob => {
+                        const dataUrl = URL.createObjectURL(blob);
+                        minifierMinifiedPreview.src = dataUrl;
+                        minifierMinifiedSize.textContent = `Size: ${formatBytes(blob.size)} (${(((originalMinifierFile.size - blob.size) / originalMinifierFile.size) * 100).toFixed(1)}% smaller)`;
+
+                        const link = document.createElement('a');
+                        link.href = dataUrl;
+                        const nameParts = originalMinifierFile.name.split('.');
+                        const extension = nameParts.pop();
+                        link.download = `${nameParts.join('.')}-minified.${extension}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        // URL.revokeObjectURL(dataUrl) shouldn't be called immediately if it's used by the preview src
+                        showMessage(`Successfully minified and downloaded image!`, 'green');
+
+                    }, mimeType, quality);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(originalMinifierFile);
+        });
+
 
         // Initialize default views
         document.querySelector('[data-tab="encode"]').click();
         encodeType.dispatchEvent(new Event('change'));
         decodeType.dispatchEvent(new Event('change'));
-
     </script>
 </body>
 </html>
