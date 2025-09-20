@@ -85,6 +85,9 @@
         .popup-exit {
             animation: fade-out 0.5s ease-in forwards;
         }
+        .right-8{
+          right:calc(var(--spacing)*8)
+        }
 
         @keyframes slide-up-fade-in {
             from {
@@ -186,7 +189,7 @@ class="fixed bottom-20 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p
     </div>
 
     <!-- Attention Popup -->
-    <div id="attention-popup" class="hidden fixed bottom-24 right-4 sm:right-6 bg-blue-600 text-white p-3 rounded-lg shadow-lg z-40">
+    <div id="attention-popup" class="hidden fixed bottom-4 right-8 sm:right-6 bg-blue-600 text-white p-3 rounded-lg shadow-lg z-40">
         <p class="text-sm font-medium">Have a question? Chat with us! &rarr;</p>
     </div>
     <!-- Toggle Button -->
