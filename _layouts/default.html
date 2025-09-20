@@ -108,8 +108,11 @@ createChat({
 	webhookUrl: 'https://87f5e3ff2707.ngrok-free.app/webhook/d7e795ae-04ee-4727-8cc1-3a5cddabf7e0/chat',
 	webhookConfig: {
 		method: 'POST',
-		headers: {}
+		headers: {
+    'ngrok-skip-browser-warning': 'true'
+  }
 	},
+  
 	target: '#n8n-chat',
 	mode: 'window',
 	chatInputKey: 'chatInput',
