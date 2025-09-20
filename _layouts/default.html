@@ -125,8 +125,8 @@ class="fixed bottom-20 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold text-gray-100">n8n AI Chat</h1>
-                    <p class="text-sm text-gray-400">Powered by your n8n webhook</p>
+                    <h1 class="text-xl font-bold text-gray-100">Sulochan's AI Assistant</h1>
+                    <p class="text-sm text-gray-400">Powered by code.darjeeling</p>
                 </div>
              </div>
              <button id="close-widget-button" class="text-gray-400 hover:text-white transition-colors">
@@ -346,7 +346,7 @@ createChat({
             if (sender === 'user') {
                 messageElement.className = 'flex justify-end';
                 messageElement.innerHTML = `
-                    <div class="bg-blue-600 p-4 rounded-lg rounded-br-none max-w-md">
+                    <div class="bg-blue-600 p-4 rounded-lg rounded-br-none max-w-md text-white">
                         <p>${text}</p>
                     </div>
                 `;
@@ -355,7 +355,7 @@ createChat({
                 messageElement.className = 'flex gap-3';
                 messageElement.innerHTML = `
                     <div class="flex-shrink-0 w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
-                    <div class="${errorClass} p-4 rounded-lg rounded-tl-none max-w-md">
+                    <div class="${errorClass} p-4 rounded-lg rounded-tl-none max-w-md text-white">
                         <p>${text}</p>
                     </div>
                 `;
