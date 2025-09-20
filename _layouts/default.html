@@ -309,8 +309,8 @@ createChat({
                 removeTypingIndicator();
 
                 // Assuming n8n returns a JSON object with a 'reply' key.
-               if (botReply) {
-                    addMessageToUI('bot', botReply);
+               if (data) {
+                    addMessageToUI('bot', data);
                 } else {
                     addMessageToUI('bot', "Sorry, I couldn't get a valid response.");
                 }
