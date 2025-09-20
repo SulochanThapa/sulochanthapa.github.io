@@ -117,7 +117,7 @@ class="fixed bottom-20 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p
   </defs>
   </svg>
 </a>
-<div id="chat-widget" class="hidden fixed bottom-20 right-4 sm:right-6 w-[calc(100%-2rem)] sm:w-96 flex flex-col bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 z-50" style="height: 70vh; max-height: 600px;">
+<div id="chat-widget" class="hidden fixed bottom-20 right-5 sm:right-6 w-[calc(100%-2rem)] sm:w-96 flex flex-col bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 z-50" style="height: 70vh; max-height: 600px;">
         <!-- Header -->
         <header class="p-4 border-b border-gray-700 flex items-center justify-between gap-4">
              <div class="flex items-center gap-4">
@@ -303,14 +303,17 @@ createChat({
                     throw new Error(`Webhook responded with status: ${response.status}`);
                 }
 
-                const data = await response.json();
+                const data = await response.text();
                 
                 // 3. Remove typing indicator and display bot's response
                 removeTypingIndicator();
 
                 // Assuming n8n returns a JSON object with a 'reply' key.
-                const botReply = data.reply || "Sorry, I couldn't get a valid response.";
-                addMessageToUI('bot', botReply);
+               if (botReply) {
+                    addMessageToUI('bot', botReply);
+                } else {
+                    addMessageToUI('bot', "Sorry, I couldn't get a valid response.");
+                }
 
             } catch (error) {
                 console.error('Error calling n8n webhook:', error);
