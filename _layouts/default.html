@@ -77,6 +77,34 @@
         .typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
+        /* Attention Popup Animation */
+        .popup-enter {
+            animation: slide-up-fade-in 0.5s ease-out forwards;
+        }
+
+        .popup-exit {
+            animation: fade-out 0.5s ease-in forwards;
+        }
+
+        @keyframes slide-up-fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(1rem);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fade-out {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
         @keyframes dot-pulse {
             0%, 60%, 100% {
                 transform: scale(0.8);
@@ -157,6 +185,10 @@ class="fixed bottom-20 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p
         </footer>
     </div>
 
+    <!-- Attention Popup -->
+    <div id="attention-popup" class="hidden fixed bottom-24 right-4 sm:right-6 bg-blue-600 text-white p-3 rounded-lg shadow-lg z-40">
+        <p class="text-sm font-medium">Have a question? Chat with us! &rarr;</p>
+    </div>
     <!-- Toggle Button -->
     <button id="chat-toggle-button" class="fixed bottom-4 right-5 sm:bottom-6 sm:right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 z-50">
         <!-- Chat Icon -->
@@ -234,6 +266,8 @@ createChat({
         const closeWidgetButton = document.getElementById('close-widget-button');
         const chatIcon = document.getElementById('chat-icon');
         const closeIcon = document.getElementById('close-icon');
+          const attentionPopup = document.getElementById('attention-popup');
+        let popupTimer; // To hold the timeout ID for auto-hiding
 
         // --- CONFIGURATION ---
         const webhookUrl = 'https://87f5e3ff2707.ngrok-free.app/webhook/d7e795ae-04ee-4727-8cc1-3a5cddabf7e0/chat';
@@ -244,6 +278,35 @@ createChat({
                 'ngrok-skip-browser-warning': 'true'
             }
         };
+        /**
+         * Shows the attention-grabbing popup.
+         */
+        function showAttentionPopup() {
+            attentionPopup.classList.remove('hidden', 'popup-exit');
+            attentionPopup.classList.add('popup-enter');
+
+            // Automatically hide the popup after a few seconds
+            popupTimer = setTimeout(() => {
+                hideAttentionPopup();
+            }, 5000); // Stays for 5 seconds
+        }
+
+        /**
+         * Hides the attention-grabbing popup.
+         */
+        function hideAttentionPopup() {
+            clearTimeout(popupTimer); // Prevent auto-hide if manually triggered
+            attentionPopup.classList.remove('popup-enter');
+            attentionPopup.classList.add('popup-exit');
+        }
+
+        // Hide the popup if the user interacts with the chat button
+        chatToggleButton.addEventListener('click', () => {
+            // Only hide the popup if it's currently visible or entering
+            if (attentionPopup.classList.contains('popup-enter')) {
+                 hideAttentionPopup();
+            }
+        });
         // Generate a unique session ID for this chat session
         const sessionId = crypto.randomUUID();
         
