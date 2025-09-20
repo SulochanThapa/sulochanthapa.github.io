@@ -446,6 +446,7 @@ createChat({
             `;
             chatMessages.appendChild(indicator);
             scrollToBottom();
+        
         }
 
         /**
@@ -464,6 +465,11 @@ createChat({
         function scrollToBottom() {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
+            // Show the attention popup after the page loads
+        window.addEventListener('load', () => {
+            // Show popup after a short delay
+            setTimeout(showAttentionPopup, 2000); // appears after 2 seconds
+        });
 
     </script>
 </body>
