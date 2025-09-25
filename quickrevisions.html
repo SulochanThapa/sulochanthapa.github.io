@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guided Learning App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .flashcard-container {
+            perspective: 1000px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 200px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+        }
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .flashcard-front {
+            background-color: #4a5568;
+            color: white;
+        }
+        .flashcard-back {
+            background-color: #718096;
+            color: white;
+            transform: rotateY(180deg);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+         #loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-72 bg-gray-800 text-white p-6 hidden md:block overflow-y-auto">
+            <h1 class="text-2xl font-bold mb-6">Navigation</h1>
+            <nav id="sidebar-menu">
+                <!-- Menu will be injected here -->
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col">
+            <header class="bg-white shadow p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="menu-toggle" class="md:hidden mr-4">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                    <h2 class="text-xl font-semibold text-gray-800" id="current-chapter-title">Select a Chapter</h2>
+                </div>
+                <div class="relative w-full max-w-xs">
+                    <input type="text" id="search-bar" class="w-full pl-10 pr-4 py-2 border rounded-full text-sm focus:outline-none focus:border-blue-500" placeholder="Search topics...">
+                    <div class="absolute top-0 left-0 inline-flex items-center p-2">
+                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                </div>
+            </header>
+
+            <div class="p-6" id="options-bar" style="display: none;">
+                <button class="option-btn bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full mr-2" data-option="summary">Summary</button>
+                <button class="option-btn bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full mr-2" data-option="points">Important Points</button>
+                <button class="option-btn bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-full mr-2" data-option="flashcards">Flash Cards</button>
+                <button class="option-btn bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full" data-option="quiz">Quiz Yourself</button>
+            </div>
+
+            <div class="flex-1 p-6 overflow-y-auto flex justify-center items-center" id="content-area">
+                <div id="loader-container">
+                    <div id="loader"></div>
+                    <p class="mt-4 text-gray-600">Loading learning materials...</p>
+                </div>
+            </div>
+             <footer class="p-4 bg-white shadow-inner mt-auto">
+                <div id="navigation-bar" class="flex justify-between items-center" style="display: none;">
+                    <div>
+                        <button id="prev-subject-btn" class="nav-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
+                            &laquo; Prev Subject
+                        </button>
+                        <button id="prev-chapter-btn" class="nav-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
+                            &lsaquo; Prev Chapter
+                        </button>
+                    </div>
+                    <div>
+                        <button id="next-chapter-btn" class="nav-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-l">
+                            Next Chapter &rsaquo;
+                        </button>
+                        <button id="next-subject-btn" class="nav-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-r">
+                            Next Subject &raquo;
+                        </button>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+     <!-- Mobile Sidebar -->
+    <div id="mobile-menu" class="fixed inset-0 bg-gray-800 text-white p-6 z-30 hidden overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">Navigation</h1>
+            <button id="close-menu">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <nav id="mobile-sidebar-menu">
+            <!-- Mobile menu will be injected here -->
+        </nav>
+    </div>
+
+
+    <script>
+        // --- DATA STORE IS NOW FETCHED FROM GOOGLE SHEETS ---
+        let data = {};
+        
+        // --- UI ELEMENT REFERENCES ---
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const mobileSidebarMenu = document.getElementById('mobile-sidebar-menu');
+        const contentArea = document.getElementById('content-area');
+        const currentChapterTitle = document.getElementById('current-chapter-title');
+        const optionsBar = document.getElementById('options-bar');
+        const searchBar = document.getElementById('search-bar');
+        const menuToggle = document.getElementById('menu-toggle');
+        const closeMenu = document.getElementById('close-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const navigationBar = document.getElementById('navigation-bar');
+        const loaderContainer = document.getElementById('loader-container');
+
+        let currentState = {
+            class: '',
+            subject: '',
+            chapter: '',
+            option: 'summary'
+        };
+        let quizState = {
+            cards: [],
+            currentIndex: 0
+        };
+
+        // --- DATA FETCHING AND PROCESSING ---
+        async function fetchAndProcessData() {
+            // !!! IMPORTANT !!!
+            // PASTE YOUR PUBLISHED GOOGLE SHEET CSV URL HERE
+            const googleSheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9il-RxOevtvMwuspHAxno5zhRYdvv-wyV794gT22Zms_BFFBBfnMWvVkIYYw80H-KQ9Laq1HyqwS_/pub?gid=2085825944&single=true&output=csv';
+
+            if (googleSheetUrl === 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS9il-RxOevtvMwuspHAxno5zhRYdvv-wyV794gT22Zms_BFFBBfnMWvVkIYYw80H-KQ9Laq1HyqwS_/pub?gid=2085825944&single=true&output=csv') {
+                contentArea.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                            <strong class="font-bold">Configuration needed!</strong>
+                                            <span class="block sm:inline">Please paste your Google Sheet URL in the index.html file to load the content.</span>
+                                        </div>`;
+                loaderContainer.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(googleSheetUrl);
+                const csvText = await response.text();
+                const rows = csvText.split('\n').map(row => row.trim());
+                const headers = rows.shift().split(',');
+
+                const parsedData = {};
+
+                rows.forEach(row => {
+                    const values = row.split(',');
+                    const entry = headers.reduce((obj, header, index) => {
+                        obj[header.trim()] = values[index] ? values[index].trim() : '';
+                        return obj;
+                    }, {});
+
+                    if (!entry.Class || !entry.Subject || !entry.Chapter) return;
+
+                    // Create nested structure if it doesn't exist
+                    if (!parsedData[entry.Class]) parsedData[entry.Class] = {};
+                    if (!parsedData[entry.Class][entry.Subject]) parsedData[entry.Class][entry.Subject] = {};
+
+                    // Process points and flashcards
+                    const points = entry.Points ? entry.Points.split('|').map(p => p.trim()) : [];
+                    const flashcards = [];
+                    for (let i = 1; ; i++) {
+                        const q = entry[`Flashcard_Q${i}`];
+                        const a = entry[`Flashcard_A${i}`];
+                        if (q && a) {
+                            flashcards.push({ q, a });
+                        } else {
+                            break; // Stop when no more flashcard columns are found
+                        }
+                    }
+
+                    parsedData[entry.Class][entry.Subject][entry.Chapter] = {
+                        description: entry.Description,
+                        summary: entry.Summary,
+                        points: points,
+                        flashcards: flashcards
+                    };
+                });
+                
+                data = parsedData;
+                initializeApp();
+
+            } catch (error) {
+                console.error("Error fetching or parsing data:", error);
+                 contentArea.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                            <strong class="font-bold">Failed to load data!</strong>
+                                            <span class="block sm:inline">Could not fetch data from the Google Sheet. Please check the URL and sharing settings.</span>
+                                        </div>`;
+                loaderContainer.style.display = 'none';
+            }
+        }
+        
+        function initializeApp() {
+            loaderContainer.style.display = 'none';
+            contentArea.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md">
+                                        <h3 class="text-2xl font-bold mb-4">Welcome to your Guided Learning App!</h3>
+                                        <p class="text-gray-600">Select a class, subject, and chapter from the navigation menu to get started.</p>
+                                     </div>`;
+            loadSidebarMenu();
+        }
+
+        // --- UI RENDERING AND LOGIC (Functions remain mostly the same) ---
+        function loadSidebarMenu() {
+            const menuHtml = Object.keys(data).map(classKey => `
+                <div class="mb-2">
+                    <div class="flex items-center justify-between text-lg font-semibold cursor-pointer p-2 rounded hover:bg-gray-700 class-toggle">
+                        <span>${classKey}</span>
+                        <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div class="ml-4 hidden subject-list">
+                        ${Object.keys(data[classKey]).map(subjectKey => `
+                            <div class="mb-1">
+                                <div class="flex items-center justify-between text-md font-medium cursor-pointer p-2 rounded hover:bg-gray-600 subject-toggle">
+                                    <span>${subjectKey}</span>
+                                    <svg class="w-4 h-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                                <div class="ml-4 hidden chapter-list">
+                                    ${Object.keys(data[classKey][subjectKey]).map(chapterKey => {
+                                        const chapterData = data[classKey][subjectKey][chapterKey];
+                                        return `<div class="py-1">
+                                                    <a href="#" class="block py-1 px-2 text-sm rounded transition duration-200 hover:bg-gray-500 chapter-link" data-class="${classKey}" data-subject="${subjectKey}" data-chapter="${chapterKey}">${chapterKey}</a>
+                                                    <p class="text-xs text-gray-400 px-2 italic">${chapterData.description}</p>
+                                                </div>`
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            sidebarMenu.innerHTML = menuHtml;
+            mobileSidebarMenu.innerHTML = menuHtml;
+        }
+
+        function displayContent(classKey, subjectKey, chapterKey, option) {
+            currentState = { class: classKey, subject: subjectKey, chapter: chapterKey, option };
+            currentChapterTitle.textContent = chapterKey;
+            optionsBar.style.display = 'block';
+
+            const chapterData = data[classKey][subjectKey][chapterKey];
+            let html = '';
+            switch (option) {
+                case 'summary':
+                    html = `<div class="bg-white p-8 rounded-lg shadow-md animate-fade-in">
+                                <h3 class="text-2xl font-bold mb-4">Summary</h3>
+                                <p class="text-gray-700 leading-relaxed">${chapterData.summary}</p>
+                            </div>`;
+                    break;
+                case 'points':
+                    html = `<div class="bg-white p-8 rounded-lg shadow-md animate-fade-in">
+                                <h3 class="text-2xl font-bold mb-4">Important Points</h3>
+                                <ul class="list-disc list-inside space-y-3 text-gray-700">
+                                    ${chapterData.points.map(point => `<li>${point}</li>`).join('')}
+                                </ul>
+                            </div>`;
+                    break;
+                case 'flashcards':
+                    html = `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
+                                ${chapterData.flashcards.map(card => `
+                                    <div class="flashcard-container">
+                                        <div class="flashcard">
+                                            <div class="flashcard-face flashcard-front"><p class="text-lg text-center">${card.q}</p></div>
+                                            <div class="flashcard-face flashcard-back"><p class="text-lg text-center">${card.a}</p></div>
+                                        </div>
+                                    </div>`).join('')}
+                            </div>`;
+                    break;
+                case 'quiz':
+                    quizState.cards = [...chapterData.flashcards].sort(() => Math.random() - 0.5); // Shuffle cards
+                    quizState.currentIndex = 0;
+                    html = renderQuizCard();
+                    break;
+            }
+            contentArea.innerHTML = html;
+            updateNavigation(classKey, subjectKey, chapterKey);
+        }
+        
+        function renderQuizCard() {
+            if (quizState.currentIndex >= quizState.cards.length) {
+                return `<div class="bg-white p-8 rounded-lg shadow-md animate-fade-in text-center">
+                            <h3 class="text-2xl font-bold mb-4">Quiz Complete!</h3>
+                            <p class="text-gray-700">You've finished all the cards for this chapter.</p>
+                            <button class="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded" onclick="displayContent(currentState.class, currentState.subject, currentState.chapter, 'quiz')">Try Again</button>
+                        </div>`;
+            }
+            const card = quizState.cards[quizState.currentIndex];
+            const cardCount = quizState.cards.length;
+            return `<div class="animate-fade-in">
+                        <p class="text-center text-gray-600 mb-4">Card ${quizState.currentIndex + 1} of ${cardCount}</p>
+                        <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg text-center h-64 flex flex-col justify-center items-center">
+                            <p id="quiz-question" class="text-2xl font-semibold">${card.q}</p>
+                            <p id="quiz-answer" class="text-xl text-green-700 hidden"></p>
+                        </div>
+                        <div class="text-center mt-6 space-x-4">
+                            <button id="show-answer-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-6 rounded-full">Show Answer</button>
+                            <button id="next-question-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-6 rounded-full hidden">Next Question</button>
+                        </div>
+                    </div>`;
+        }
+
+        function updateNavigation(classKey, subjectKey, chapterKey) {
+            const subjects = Object.keys(data[classKey]);
+            const chapters = Object.keys(data[classKey][subjectKey]);
+
+            const currentSubjectIndex = subjects.indexOf(subjectKey);
+            const currentChapterIndex = chapters.indexOf(chapterKey);
+
+            const prevSubjectBtn = document.getElementById('prev-subject-btn');
+            const nextSubjectBtn = document.getElementById('next-subject-btn');
+            const prevChapterBtn = document.getElementById('prev-chapter-btn');
+            const nextChapterBtn = document.getElementById('next-chapter-btn');
+
+            prevSubjectBtn.disabled = currentSubjectIndex <= 0;
+            prevSubjectBtn.classList.toggle('opacity-50', prevSubjectBtn.disabled);
+             if (!prevSubjectBtn.disabled) {
+                const prevSubjectKey = subjects[currentSubjectIndex - 1];
+                prevSubjectBtn.dataset.class = classKey;
+                prevSubjectBtn.dataset.subject = prevSubjectKey;
+                prevSubjectBtn.dataset.chapter = Object.keys(data[classKey][prevSubjectKey])[0];
+            }
+
+            nextSubjectBtn.disabled = currentSubjectIndex >= subjects.length - 1;
+            nextSubjectBtn.classList.toggle('opacity-50', nextSubjectBtn.disabled);
+            if (!nextSubjectBtn.disabled) {
+                const nextSubjectKey = subjects[currentSubjectIndex + 1];
+                nextSubjectBtn.dataset.class = classKey;
+                nextSubjectBtn.dataset.subject = nextSubjectKey;
+                nextSubjectBtn.dataset.chapter = Object.keys(data[classKey][nextSubjectKey])[0];
+            }
+
+            prevChapterBtn.disabled = currentChapterIndex <= 0;
+            prevChapterBtn.classList.toggle('opacity-50', prevChapterBtn.disabled);
+            if (!prevChapterBtn.disabled) {
+                prevChapterBtn.dataset.class = classKey;
+                prevChapterBtn.dataset.subject = subjectKey;
+                prevChapterBtn.dataset.chapter = chapters[currentChapterIndex - 1];
+            }
+
+            nextChapterBtn.disabled = currentChapterIndex >= chapters.length - 1;
+            nextChapterBtn.classList.toggle('opacity-50', nextChapterBtn.disabled);
+            if (!nextChapterBtn.disabled) {
+                nextChapterBtn.dataset.class = classKey;
+                nextChapterBtn.dataset.subject = subjectKey;
+                nextChapterBtn.dataset.chapter = chapters[currentChapterIndex + 1];
+            }
+
+            navigationBar.style.display = 'flex';
+        }
+        
+        // --- EVENT LISTENERS ---
+        function handleMenuClick(e) {
+            e.preventDefault();
+            const target = e.target.closest('.class-toggle, .subject-toggle, .chapter-link');
+            if (!target) return;
+
+            if (target.classList.contains('class-toggle') || target.classList.contains('subject-toggle')) {
+                const list = target.nextElementSibling;
+                const icon = target.querySelector('svg');
+                list.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            } else if (target.classList.contains('chapter-link')) {
+                const { class: classKey, subject: subjectKey, chapter: chapterKey } = target.dataset;
+                displayContent(classKey, subjectKey, chapterKey, 'summary');
+                
+                document.querySelectorAll('.chapter-link').forEach(a => a.classList.remove('bg-gray-700', 'font-bold'));
+                target.classList.add('bg-gray-700', 'font-bold');
+
+                if (mobileMenu.style.display !== "none") {
+                    mobileMenu.classList.add('hidden');
+                }
+            }
+        }
+        
+        sidebarMenu.addEventListener('click', handleMenuClick);
+        mobileSidebarMenu.addEventListener('click', handleMenuClick);
+
+        navigationBar.addEventListener('click', e => {
+            const target = e.target.closest('.nav-btn');
+            if (!target || target.disabled) return;
+            const { class: classKey, subject: subjectKey, chapter: chapterKey } = target.dataset;
+            displayContent(classKey, subjectKey, chapterKey, 'summary');
+        });
+
+        optionsBar.addEventListener('click', e => {
+            if (e.target.classList.contains('option-btn') && currentState.chapter) {
+                const option = e.target.dataset.option;
+                displayContent(currentState.class, currentState.subject, currentState.chapter, option);
+                document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('ring-2', 'ring-offset-2', 'ring-blue-400'));
+                e.target.classList.add('ring-2', 'ring-offset-2', 'ring-blue-400');
+            }
+        });
+
+        contentArea.addEventListener('click', e => {
+            const flashcard = e.target.closest('.flashcard');
+            if (flashcard) {
+                flashcard.classList.toggle('is-flipped');
+            } else if (e.target.classList.contains('search-result-title')) {
+                 const { class: classKey, subject: subjectKey, chapter: chapterKey } = e.target.dataset;
+                 displayContent(classKey, subjectKey, chapterKey, 'summary');
+            } else if (e.target.id === 'show-answer-btn') {
+                document.getElementById('quiz-question').classList.add('hidden');
+                const answerEl = document.getElementById('quiz-answer');
+                answerEl.textContent = quizState.cards[quizState.currentIndex].a;
+                answerEl.classList.remove('hidden');
+                e.target.classList.add('hidden');
+                document.getElementById('next-question-btn').classList.remove('hidden');
+            } else if (e.target.id === 'next-question-btn') {
+                quizState.currentIndex++;
+                contentArea.innerHTML = renderQuizCard();
+            }
+        });
+
+        searchBar.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            navigationBar.style.display = 'none';
+
+            if (!query) {
+                if (currentState.chapter) {
+                    displayContent(currentState.class, currentState.subject, currentState.chapter, currentState.option);
+                } else {
+                     contentArea.innerHTML = `<div class="bg-white p-8 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-bold mb-4">Welcome to your Guided Learning App!</h3>
+                        <p class="text-gray-600">Select a class, subject, and chapter from the navigation menu to get started.</p>
+                    </div>`;
+                }
+                return;
+            }
+
+            let resultsHtml = '';
+            for (const classKey in data) {
+                for (const subjectKey in data[classKey]) {
+                    for (const chapterKey in data[classKey][subjectKey]) {
+                        const chapterData = data[classKey][subjectKey][chapterKey];
+                        const fullText = `${chapterKey} ${chapterData.description} ${chapterData.summary} ${chapterData.points.join(' ')} ${chapterData.flashcards.map(c=>`${c.q} ${c.a}`).join(' ')}`.toLowerCase();
+
+                        if (fullText.includes(query)) {
+                            resultsHtml += `<div class="bg-white p-6 rounded-lg shadow-md mb-4">
+                                <h3 class="text-xl font-bold mb-1 cursor-pointer text-blue-600 hover:underline search-result-title" data-class="${classKey}" data-subject="${subjectKey}" data-chapter="${chapterKey}">${chapterKey}</h3>
+                                <p class="text-sm text-gray-500 mb-2">${classKey} > ${subjectKey}</p>
+                                <p class="text-gray-600 text-sm">${chapterData.summary.substring(0, 150).replace(new RegExp(query, 'gi'), match => `<span class="bg-yellow-200">${match}</span>`)}...</p>
+                            </div>`;
+                        }
+                    }
+                }
+            }
+            contentArea.innerHTML = resultsHtml || `<div class="bg-white p-8 rounded-lg shadow-md"><p>No results found for "${e.target.value}".</p></div>`;
+        });
+        
+        menuToggle.addEventListener('click', () => mobileMenu.classList.remove('hidden'));
+        closeMenu.addEventListener('click', () => mobileMenu.classList.add('hidden'));
+
+        // --- APP INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', fetchAndProcessData);
+    </script>
+</body>
+</html>
+
