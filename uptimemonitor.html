@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uptime Monitor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for loading spinner and status indicators */
+        .loader {
+            border-top-color: #3498db;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .status-up { background-color: #2ecc71; color: white; }
+        .status-down { background-color: #e74c3c; color: white; }
+        .status-pending { background-color: #f1c40f; color: white; }
+        body { font-family: 'Inter', sans-serif; }
+        @import url('https://rsms.me/inter/inter.css');
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="mb-8">
+            <h1 class="text-4xl font-bold text-gray-900">Uptime Monitor</h1>
+            <p class="text-gray-600 mt-1">A simple dashboard to monitor your web services, powered by Google Sheets.</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Add & Manage -->
+            <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-md">
+                <h2 class="text-2xl font-semibold mb-4">Add New Target</h2>
+                <form id="addTargetForm">
+                    <div class="mb-4">
+                        <label for="friendlyName" class="block text-sm font-medium text-gray-700 mb-1">Friendly Name</label>
+                        <input type="text" id="friendlyName" name="friendlyName" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., My Personal Blog">
+                    </div>
+                    <div class="mb-4">
+                        <label for="targetUrl" class="block text-sm font-medium text-gray-700 mb-1">Target URL or IP</label>
+                        <input type="text" id="targetUrl" name="targetUrl" required class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com">
+                    </div>
+                    <button type="submit" id="addButton" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                        Add Target
+                    </button>
+                </form>
+
+                <hr class="my-6 border-gray-200">
+
+                <h2 class="text-2xl font-semibold mb-4">Actions</h2>
+                 <div class="flex flex-col space-y-3">
+                    <button id="refreshButton" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 transition-colors duration-200 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5M4 4l1.5 1.5A9 9 0 0120.5 10M20 20l-1.5-1.5A9 9 0 003.5 14"></path></svg>
+                        Refresh List
+                    </button>
+                    <button id="sendReportButton" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-md hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center">
+                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        Send Status Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right Column: Status Table -->
+            <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                 <h2 class="text-2xl font-semibold mb-4">Monitored Targets</h2>
+                 <div id="loader" class="flex justify-center items-center py-10">
+                     <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+                 </div>
+                 <div id="targetsTableContainer" class="overflow-x-auto hidden">
+                     <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Checked</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="targetsTableBody" class="bg-white divide-y divide-gray-200">
+                            <!-- Rows will be injected here by JavaScript -->
+                        </tbody>
+                    </table>
+                 </div>
+                 <div id="noTargetsMessage" class="text-center py-10 text-gray-500 hidden">
+                     <p>No targets are being monitored yet.</p>
+                     <p class="text-sm">Use the form on the left to add your first target.</p>
+                 </div>
+            </div>
+        </div>
+        
+        <!-- Toast Notification -->
+        <div id="toast" class="fixed bottom-5 right-5 bg-gray-900 text-white py-2 px-5 rounded-lg shadow-xl opacity-0 translate-y-10 transition-all duration-300">
+            <p id="toastMessage"></p>
+        </div>
+
+    </div>
+
+    <script>
+        // IMPORTANT: Replace this with the Web App URL you get after deploying the Google Apps Script.
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzpVQWWiWoUOZW8V5g25yIxbQXyIrcJyCpUgMmLQqvZcye3kwivfuN6nhbLBooW8sMgYg/exec'; 
+
+        const loader = document.getElementById('loader');
+        const tableContainer = document.getElementById('targetsTableContainer');
+        const tableBody = document.getElementById('targetsTableBody');
+        const noTargetsMessage = document.getElementById('noTargetsMessage');
+        const addTargetForm = document.getElementById('addTargetForm');
+        const refreshButton = document.getElementById('refreshButton');
+        const sendReportButton = document.getElementById('sendReportButton');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // --- API Communication ---
+        async function apiCall(action, payload = {}, method = 'GET') {
+            const url = `${WEB_APP_URL}?action=${action}`;
+            try {
+                const options = {
+                    method: 'POST', // All requests go via POST to use postData
+                    mode: 'cors',
+                    redirect: 'follow',
+                    body: JSON.stringify(payload)
+                };
+                const response = await fetch(url, options);
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error || 'An unknown API error occurred.');
+                }
+                return result.data;
+            } catch (error) {
+                console.error(`API call failed for action "${action}":`, error);
+                showToast(`Error: ${error.message}`, 'error');
+                throw error;
+            }
+        }
+
+        // --- UI Rendering ---
+
+        function renderTable(targets) {
+            tableBody.innerHTML = '';
+            if (!targets || targets.length === 0) {
+                tableContainer.classList.add('hidden');
+                noTargetsMessage.classList.remove('hidden');
+                return;
+            }
+            
+            tableContainer.classList.remove('hidden');
+            noTargetsMessage.classList.add('hidden');
+
+            targets.forEach(target => {
+                const statusClass = target.Status === 'UP' ? 'status-up' : (target.Status === 'DOWN' ? 'status-down' : 'status-pending');
+                const lastChecked = target['Last Checked'] ? new Date(target['Last Checked']).toLocaleString() : 'Never';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="font-medium text-gray-900">${target['Friendly Name']}</div>
+                        <div class="text-sm text-gray-500">${target['Target URL']}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                            ${target.Status || 'PENDING'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${lastChecked}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <button class="text-red-600 hover:text-red-900 delete-btn" data-url="${target['Target URL']}">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function showLoading(isLoading) {
+            if (isLoading) {
+                loader.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+                noTargetsMessage.classList.add('hidden');
+            } else {
+                loader.classList.add('hidden');
+            }
+        }
+        
+        let toastTimeout;
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+            toast.className = `fixed bottom-5 right-5 text-white py-2 px-5 rounded-lg shadow-xl transition-all duration-300 ${type === 'error' ? 'bg-red-600' : 'bg-gray-900'}`;
+            toast.classList.remove('opacity-0', 'translate-y-10');
+            
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-10');
+            }, 4000);
+        }
+
+        // --- Event Handlers ---
+
+        async function fetchAndRenderTargets() {
+            showLoading(true);
+            try {
+                const targets = await apiCall('getTargets');
+                renderTable(targets);
+            } catch (error) {
+                console.error("Failed to fetch targets.");
+            } finally {
+                showLoading(false);
+            }
+        }
+        
+        addTargetForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const addButton = document.getElementById('addButton');
+            addButton.disabled = true;
+            addButton.textContent = 'Adding...';
+
+            const payload = {
+                name: document.getElementById('friendlyName').value,
+                url: document.getElementById('targetUrl').value
+            };
+            
+            try {
+                const result = await apiCall('addTarget', payload, 'POST');
+                showToast(result.message);
+                addTargetForm.reset();
+                fetchAndRenderTargets();
+            } catch (error) {
+                console.error("Failed to add target.");
+            } finally {
+                addButton.disabled = false;
+                addButton.textContent = 'Add Target';
+            }
+        });
+
+        tableBody.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('delete-btn')) {
+                const urlToDelete = e.target.dataset.url;
+                if (confirm(`Are you sure you want to delete "${urlToDelete}"?`)) {
+                    try {
+                        const result = await apiCall('deleteTarget', { url: urlToDelete }, 'POST');
+                        showToast(result.message);
+                        fetchAndRenderTargets();
+                    } catch (error) {
+                         console.error("Failed to delete target.");
+                    }
+                }
+            }
+        });
+        
+        refreshButton.addEventListener('click', fetchAndRenderTargets);
+
+        sendReportButton.addEventListener('click', async () => {
+             sendReportButton.disabled = true;
+             sendReportButton.innerHTML = 'Sending...';
+             try {
+                const result = await apiCall('sendReport', {}, 'POST');
+                showToast(result.message);
+             } catch (error) {
+                 console.error("Failed to send report.");
+             } finally {
+                sendReportButton.disabled = false;
+                sendReportButton.innerHTML = '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>Send Status Report';
+             }
+        });
+
+
+        // --- Initial Load ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+             if (WEB_APP_URL === 'https://script.google.com/macros/s/AKfycbzpVQWWiWoUOZW8V5g25yIxbQXyIrcJyCpUgMmLQqvZcye3kwivfuN6nhbLBooW8sMgYg/exec') {
+                alert('CRITICAL: WEB_APP_URL is not set! Please edit the index.html file and add your Google Apps Script Web App URL.');
+                return;
+            }
+            fetchAndRenderTargets();
+        });
+    </script>
+
+</body>
+</html>
+
