@@ -118,13 +118,16 @@
 
         // --- API Communication ---
         async function apiCall(action, payload = {}) {
-            const url = `${WEB_APP_URL}?action=${action}`;
+            const url = `${WEB_APP_URL}`;
             try {
                 const options = {
                     method: 'POST',
                     mode: 'cors',
                     redirect: 'follow',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({ 
+                action: action,  // Include action in the body
+                ...payload 
+            })
                 };
                 const response = await fetch(url, options);
                 if (!response.ok) {
