@@ -3,9 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free all-in-one online toolkit for encoding, decoding, document conversion, image processing and more">
+    <meta name="theme-color" content="#4f46e5">
     <title>All-in-One Toolkit</title>
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    screens: {
+                        'xs': '480px',
+                    }
+                }
+            }
+        }
+    </script>
     <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Document Converter Libraries -->
@@ -19,7 +32,18 @@
             font-family: 'Inter', sans-serif;
         }
         input[type="file"]::file-selector-button {
-            @apply bg-indigo-50 text-indigo-700 font-semibold border-0 mr-4 px-4 py-2 rounded-md cursor-pointer hover:bg-indigo-100 transition-colors duration-200;
+            background-color: rgb(238, 242, 255); /* bg-indigo-50 */
+            color: rgb(67, 56, 202); /* text-indigo-700 */
+            font-weight: 600; /* font-semibold */
+            border: 0;
+            margin-right: 1rem; /* mr-4 */
+            padding: 0.5rem 1rem; /* px-4 py-2 */
+            border-radius: 0.375rem; /* rounded-md */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background-color: rgb(224, 231, 255); /* hover:bg-indigo-100 */
         }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -89,14 +113,36 @@
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3060402455643540"
      crossorigin="anonymous"></script>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen py-10">
- 
-    <div class="max-w-5xl px-4 xl:px-0 py-20 mx-auto">
-        <!-- Main application card -->
-        <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div class="p-6 md:p-8">
-                <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">All-in-One Toolkit</h1>
-                <p class="text-center text-gray-500 mb-8">Encode, Decode, Convert Documents & Images, Minify, and Analyze.</p>
+<body class="bg-gray-50 min-h-screen py-10">
+    
+    <!-- Main content wrapper with side ad spaces -->
+    <div class="container mx-auto px-4 flex flex-col lg:flex-row">
+        
+        <!-- Left sidebar for ads (desktop only) -->
+        <div class="hidden lg:block lg:w-1/6 min-h-screen">
+            <!-- Left ad container -->
+            <div class="sticky top-8">
+                <!-- Ad placeholder -->
+                <div class="bg-white rounded-lg shadow-md p-2 border border-gray-200 min-h-[600px] w-full overflow-hidden">
+                    <p class="text-xs text-center text-gray-400 mb-2">Advertisement</p>
+                    <!-- Google ad will be placed here -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-3060402455643540"
+                         data-ad-slot="left-sidebar-ad"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="w-full lg:w-4/6 py-10">
+            <!-- Main application card -->
+            <div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h1 class="text-2xl md:text-3xl font-bold text-center text-gray-800 mb-2">All-in-One Toolkit</h1>
+                    <p class="text-center text-gray-500 mb-8">Encode, Decode, Convert Documents & Images, Minify, and Analyze.</p>
 
                 <!-- Tab navigation -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 mb-8 bg-gray-100 p-1 rounded-lg">
@@ -440,7 +486,43 @@
                 <div class="bg-gray-100 p-3 rounded-md">Paragraphs: <span id="paragraph-count" class="font-bold text-gray-900 block text-lg">0</span></div>
             </div>
         </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right sidebar for ads (desktop only) -->
+        <div class="hidden lg:block lg:w-1/6 min-h-screen">
+            <!-- Right ad container -->
+            <div class="sticky top-8">
+                <!-- Ad placeholder -->
+                <div class="bg-white rounded-lg shadow-md p-2 border border-gray-200 min-h-[600px] w-full overflow-hidden">
+                    <p class="text-xs text-center text-gray-400 mb-2">Advertisement</p>
+                    <!-- Google ad will be placed here -->
+                    <ins class="adsbygoogle"
+                         style="display:block"
+                         data-ad-client="ca-pub-3060402455643540"
+                         data-ad-slot="right-sidebar-ad"
+                         data-ad-format="auto"
+                         data-full-width-responsive="true"></ins>
+                </div>
+            </div>
+        </div>
     </div>
+    
+    <!-- Mobile ad banner (only visible on small screens) -->
+    <div class="container mx-auto px-4 mt-8 mb-8 lg:hidden">
+        <div class="bg-white rounded-lg shadow-md p-2 border border-gray-200 overflow-hidden">
+            <p class="text-xs text-center text-gray-400 mb-2">Advertisement</p>
+            <!-- Google ad will be placed here -->
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-3060402455643540"
+                 data-ad-slot="mobile-banner-ad"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    </div>
+    
     <!-- Sidebar Overlay -->
     <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
 
@@ -1126,6 +1208,11 @@
         updatePreview(); // Initial preview for PDF converter
         populateUnitSelectors(); // Initial population for Unit converter
         fetchRates(); // Fetch currency rates on load
+        
+        // Initialize Google Ads
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
 </body>
 </html>
