@@ -109,9 +109,71 @@
             display: block;
             animation: popup-intro 0.5s ease-out forwards;
         }
+        
+        /* Ad container styles */
+        .ad-container {
+            position: relative;
+            display: block;
+        }
+        .ad-container::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            z-index: 10;
+        }
     </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3060402455643540"
      crossorigin="anonymous"></script>
+    <!-- Add meta tag to help with opening in new tabs -->
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <!-- Custom AdSense configuration script -->
+    <script>
+        window.addEventListener('load', function() {
+            // Set to ensure ads open in new tabs at the AdSense configuration level
+            try {
+                if (window.adsbygoogle && !window.adsbygoogle.loaded) {
+                    window.adsbygoogle = window.adsbygoogle || [];
+                    window.adsbygoogle.oldPush = window.adsbygoogle.push;
+                    window.adsbygoogle.push = function(obj) {
+                        if (obj && typeof obj === 'object') {
+                            // Add necessary parameters to ensure new tab opening
+                            if (!obj.params) obj.params = {};
+                            obj.params.google_target = '_blank'; 
+                        }
+                        return this.oldPush(obj);
+                    };
+                }
+            } catch(e) {
+                console.log('AdSense configuration error:', e);
+            }
+            
+            // Add a global click handler to make sure any ad clicks open in new tabs
+            document.addEventListener('click', function(e) {
+                // Check if the click is inside or near an ad iframe
+                const adIframes = document.querySelectorAll('iframe[id^="google_ads_iframe"]');
+                adIframes.forEach(iframe => {
+                    const rect = iframe.getBoundingClientRect();
+                    // Expand detection area slightly to catch clicks near the iframe edges
+                    const expandedArea = 10; // pixels
+                    if (e.clientX >= rect.left - expandedArea && 
+                        e.clientX <= rect.right + expandedArea && 
+                        e.clientY >= rect.top - expandedArea && 
+                        e.clientY <= rect.bottom + expandedArea) {
+                        
+                        // This click may be intended for an ad - ensure it opens in a new tab
+                        if (e.target.tagName === 'A' && !e.target.target) {
+                            e.preventDefault();
+                            window.open(e.target.href, '_blank');
+                        }
+                    }
+                });
+            }, true);
+        });
+    </script>
 </head>
 <body class="bg-gray-50 min-h-screen py-10">
     
@@ -1167,6 +1229,57 @@
         (adsbygoogle = window.adsbygoogle || []).push({});
         (adsbygoogle = window.adsbygoogle || []).push({});
         (adsbygoogle = window.adsbygoogle || []).push({});
+        
+        // Make AdSense ads open in a new tab
+        const setupAdsToOpenInNewTab = () => {
+            // This function will run after ads have loaded
+            setTimeout(() => {
+                // Find all iframes that could be ads
+                const adIframes = document.querySelectorAll('iframe[id^="google_ads_iframe"]');
+                
+                adIframes.forEach(iframe => {
+                    try {
+                        // Add a listener for when the iframe content is loaded
+                        iframe.addEventListener('load', () => {
+                            try {
+                                // Try to access the iframe document
+                                const iframeDoc = iframe.contentDocument || (iframe.contentWindow && iframe.contentWindow.document);
+                                
+                                if (iframeDoc) {
+                                    // Find all links inside the iframe
+                                    const links = iframeDoc.querySelectorAll('a');
+                                    links.forEach(link => {
+                                        // Set all links to open in a new tab
+                                        link.setAttribute('target', '_blank');
+                                    });
+                                }
+                            } catch (e) {
+                                // Cross-origin issues - we'll use method 2
+                                console.log('Could not directly modify iframe content due to cross-origin policy');
+                            }
+                        });
+                        
+                        // Method 2: Wrap the iframe in an anchor tag
+                        const iframeParent = iframe.parentNode;
+                        if (iframeParent && !iframeParent.hasAttribute('target')) {
+                            iframeParent.setAttribute('target', '_blank');
+                        }
+                    } catch (e) {
+                        console.log('Error setting up ads to open in new tab:', e);
+                    }
+                });
+            }, 2000); // Give ads some time to load
+        };
+        
+        // Run once when page loads
+        setupAdsToOpenInNewTab();
+        
+        // Also run when ads are refreshed (like after tab switching)
+        ['click', 'DOMContentLoaded', 'load'].forEach(eventType => {
+            document.addEventListener(eventType, () => {
+                setupAdsToOpenInNewTab();
+            });
+        });
     </script>
 </body>
 </html>
