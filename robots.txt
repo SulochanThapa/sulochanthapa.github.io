@@ -3,4 +3,4 @@ Disallow: /admin/
 Disallow: /private/
 Allow: /
 
-Sitemap: https://orchidghar.github.io/orchidghar/sitemap.xml
+Sitemap: https://sulochanthapa.github.io/sitemap.xml
