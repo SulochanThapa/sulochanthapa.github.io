@@ -1,0 +1,52 @@
+# Cache headers for Netlify/Cloudflare Pages
+# This will provide efficient caching for static assets
+
+# Images - cache for 1 year
+/*.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/*.jpeg
+  Cache-Control: public, max-age=31536000, immutable
+/*.png
+  Cache-Control: public, max-age=31536000, immutable
+/*.gif
+  Cache-Control: public, max-age=31536000, immutable
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable
+/*.svg
+  Cache-Control: public, max-age=31536000, immutable
+/*.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+# CSS and JavaScript - cache for 1 year
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts - cache for 1 year
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+/*.ttf
+  Cache-Control: public, max-age=31536000, immutable
+/*.otf
+  Cache-Control: public, max-age=31536000, immutable
+/*.eot
+  Cache-Control: public, max-age=31536000, immutable
+
+# HTML - cache for 1 day with revalidation
+/*.html
+  Cache-Control: public, max-age=86400, must-revalidate
+/
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# JSON and XML - cache for 1 hour
+/*.json
+  Cache-Control: public, max-age=3600, must-revalidate
+/*.xml
+  Cache-Control: public, max-age=3600, must-revalidate
+
+# Default for everything else
+/*
+  Cache-Control: public, max-age=3600

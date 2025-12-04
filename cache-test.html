@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cache Test - Sulochan Thapa Portfolio</title>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #ffffff;
+        }
+        .container {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        h1 {
+            color: #4f46e5;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .status.active {
+            background: #10b981;
+            color: white;
+        }
+        .status.inactive {
+            background: #ef4444;
+            color: white;
+        }
+        .cache-item {
+            background: #1e1e1e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 4px solid #4f46e5;
+        }
+        .cache-item.cached {
+            border-left-color: #10b981;
+        }
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #4338ca;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4f46e5;
+        }
+        .stat-label {
+            color: #9ca3af;
+            margin-top: 10px;
+        }
+        #log {
+            background: #000;
+            color: #10b981;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🚀 Cache Performance Test</h1>
+    
+    <div class="container">
+        <h2>Service Worker Status</h2>
+        <div id="sw-status" class="status inactive">Checking...</div>
+        <p id="sw-info"></p>
+    </div>
+
+    <div class="container">
+        <h2>📊 Cache Statistics</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="cached-count">0</div>
+                <div class="stat-label">Cached Items</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="cache-size">0 KB</div>
+                <div class="stat-label">Total Cache Size</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="cache-hit-rate">0%</div>
+                <div class="stat-label">Cache Hit Rate</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🔧 Cache Management</h2>
+        <button onclick="testCache()">Test Cache Performance</button>
+        <button onclick="viewCachedItems()">View Cached Items</button>
+        <button onclick="clearCache()">Clear Cache</button>
+        <button onclick="updateServiceWorker()">Update Service Worker</button>
+    </div>
+
+    <div class="container">
+        <h2>📝 Activity Log</h2>
+        <div id="log">Initializing cache test...\n</div>
+    </div>
+
+    <div class="container">
+        <h2>📦 Cached Resources</h2>
+        <div id="cached-items"></div>
+    </div>
+
+    <script>
+        const log = (message) => {
+            const logEl = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logEl.textContent += `[${timestamp}] ${message}\n`;
+            logEl.scrollTop = logEl.scrollHeight;
+        };
+
+        // Check Service Worker status
+        async function checkServiceWorker() {
+            const statusEl = document.getElementById('sw-status');
+            const infoEl = document.getElementById('sw-info');
+
+            if ('serviceWorker' in navigator) {
+                try {
+                    const registration = await navigator.serviceWorker.getRegistration();
+                    if (registration) {
+                        statusEl.textContent = 'Active';
+                        statusEl.className = 'status active';
+                        infoEl.textContent = `Service Worker is active at scope: ${registration.scope}`;
+                        log('✅ Service Worker is active and running');
+                        
+                        if (registration.waiting) {
+                            log('⚠️ New service worker waiting to activate');
+                        }
+                        
+                        return true;
+                    } else {
+                        statusEl.textContent = 'Not Registered';
+                        statusEl.className = 'status inactive';
+                        infoEl.textContent = 'Service Worker is not registered. Please visit the home page first.';
+                        log('❌ Service Worker not registered');
+                        return false;
+                    }
+                } catch (error) {
+                    statusEl.textContent = 'Error';
+                    statusEl.className = 'status inactive';
+                    infoEl.textContent = `Error: ${error.message}`;
+                    log(`❌ Error checking Service Worker: ${error.message}`);
+                    return false;
+                }
+            } else {
+                statusEl.textContent = 'Not Supported';
+                statusEl.className = 'status inactive';
+                infoEl.textContent = 'Service Workers are not supported in this browser.';
+                log('❌ Service Workers not supported');
+                return false;
+            }
+        }
+
+        // View cached items
+        async function viewCachedItems() {
+            log('📋 Loading cached items...');
+            const container = document.getElementById('cached-items');
+            container.innerHTML = '<p>Loading...</p>';
+
+            try {
+                const cacheNames = await caches.keys();
+                log(`Found ${cacheNames.length} cache(s)`);
+                
+                let totalSize = 0;
+                let totalItems = 0;
+                let html = '';
+
+                for (const cacheName of cacheNames) {
+                    const cache = await caches.open(cacheName);
+                    const requests = await cache.keys();
+                    
+                    html += `<h3>Cache: ${cacheName} (${requests.length} items)</h3>`;
+                    
+                    for (const request of requests) {
+                        const response = await cache.match(request);
+                        const blob = await response.blob();
+                        const size = blob.size;
+                        totalSize += size;
+                        totalItems++;
+                        
+                        const url = new URL(request.url);
+                        const sizeKB = (size / 1024).toFixed(2);
+                        
+                        html += `
+                            <div class="cache-item cached">
+                                <strong>${url.pathname}</strong><br>
+                                Size: ${sizeKB} KB | 
+                                Type: ${response.type} | 
+                                Status: ${response.status}
+                            </div>
+                        `;
+                    }
+                }
+
+                container.innerHTML = html || '<p>No cached items found.</p>';
+                
+                document.getElementById('cached-count').textContent = totalItems;
+                document.getElementById('cache-size').textContent = (totalSize / 1024).toFixed(2) + ' KB';
+                
+                log(`✅ Found ${totalItems} cached items totaling ${(totalSize / 1024).toFixed(2)} KB`);
+            } catch (error) {
+                container.innerHTML = `<p style="color: #ef4444;">Error: ${error.message}</p>`;
+                log(`❌ Error loading cached items: ${error.message}`);
+            }
+        }
+
+        // Test cache performance
+        async function testCache() {
+            log('🧪 Running cache performance test...');
+            
+            const testUrls = [
+                '/assets/css/main.css',
+                '/assets/images/sulochan-thapa.webp',
+                '/index.html'
+            ];
+
+            let hits = 0;
+            let misses = 0;
+
+            for (const url of testUrls) {
+                try {
+                    const cacheNames = await caches.keys();
+                    let found = false;
+                    
+                    for (const cacheName of cacheNames) {
+                        const cache = await caches.open(cacheName);
+                        const response = await cache.match(url);
+                        if (response) {
+                            found = true;
+                            hits++;
+                            log(`✅ Cache HIT: ${url}`);
+                            break;
+                        }
+                    }
+                    
+                    if (!found) {
+                        misses++;
+                        log(`❌ Cache MISS: ${url}`);
+                    }
+                } catch (error) {
+                    log(`⚠️ Error testing ${url}: ${error.message}`);
+                    misses++;
+                }
+            }
+
+            const hitRate = hits / (hits + misses) * 100;
+            document.getElementById('cache-hit-rate').textContent = hitRate.toFixed(0) + '%';
+            log(`📊 Cache hit rate: ${hitRate.toFixed(2)}% (${hits}/${hits + misses})`);
+        }
+
+        // Clear cache
+        async function clearCache() {
+            if (!confirm('Are you sure you want to clear all cached data?')) {
+                return;
+            }
+
+            log('🗑️ Clearing all caches...');
+            
+            try {
+                const cacheNames = await caches.keys();
+                await Promise.all(cacheNames.map(name => caches.delete(name)));
+                
+                document.getElementById('cached-count').textContent = '0';
+                document.getElementById('cache-size').textContent = '0 KB';
+                document.getElementById('cached-items').innerHTML = '<p>Cache cleared.</p>';
+                
+                log(`✅ Successfully cleared ${cacheNames.length} cache(s)`);
+                alert('Cache cleared successfully! Please reload the page.');
+            } catch (error) {
+                log(`❌ Error clearing cache: ${error.message}`);
+                alert('Error clearing cache: ' + error.message);
+            }
+        }
+
+        // Update Service Worker
+        async function updateServiceWorker() {
+            log('🔄 Checking for Service Worker updates...');
+            
+            try {
+                const registration = await navigator.serviceWorker.getRegistration();
+                if (registration) {
+                    await registration.update();
+                    log('✅ Service Worker update check complete');
+                    
+                    if (registration.waiting) {
+                        log('⚠️ New version available! Reloading...');
+                        registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        window.location.reload();
+                    } else {
+                        alert('Service Worker is up to date!');
+                    }
+                } else {
+                    log('❌ No Service Worker registered');
+                    alert('No Service Worker registered. Please visit the home page first.');
+                }
+            } catch (error) {
+                log(`❌ Error updating Service Worker: ${error.message}`);
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Initialize
+        window.addEventListener('load', async () => {
+            log('🚀 Initializing cache test page...');
+            const swActive = await checkServiceWorker();
+            
+            if (swActive) {
+                await viewCachedItems();
+                await testCache();
+            }
+            
+            log('✅ Initialization complete');
+        });
+
+        // Listen for Service Worker updates
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                log('🔄 Service Worker updated! Reloading page...');
+                window.location.reload();
+            });
+        }
+    </script>
+</body>
+</html>

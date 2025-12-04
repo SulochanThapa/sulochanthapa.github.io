@@ -17,7 +17,37 @@
 </section>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
+  // Use Intersection Observer to defer GitHub API calls until section is visible
+  if ('IntersectionObserver' in window) {
+    const reposSection = document.querySelector('#github-repos');
+    
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          loadGitHubRepos();
+          sectionObserver.unobserve(entry.target);
+        }
+      });
+    }, {
+      rootMargin: '100px 0px', // Start loading 100px before visible
+      threshold: 0.1
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      sectionObserver.observe(reposSection);
+    });
+  } else {
+    // Fallback: load on DOMContentLoaded but defer execution
+    document.addEventListener('DOMContentLoaded', () => {
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(() => loadGitHubRepos(), { timeout: 2000 });
+      } else {
+        setTimeout(() => loadGitHubRepos(), 1000);
+      }
+    });
+  }
+  
+  function loadGitHubRepos() {
     // Replace with your GitHub username
     const username = 'sulochanthapa';
     const excludedRepos = ['SulochanThapa', 'sulochanthapa.github.io'];
@@ -62,7 +92,7 @@
         const reposContainer = document.getElementById('github-repos');
         reposContainer.innerHTML = '<div class="col-span-full text-center text-gray-400">Failed to load repositories. Please try again later.</div>';
       });
-  });
+  }
   
   // Fetch README.md content for a repository
   function fetchReadmeContent(repo) {

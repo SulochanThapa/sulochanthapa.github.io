@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Render Blocking Test - Performance Monitor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .metric {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .status {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 10px 5px;
+        }
+        .status.good { background: #10b981; }
+        .status.warning { background: #f59e0b; }
+        .status.poor { background: #ef4444; }
+        button {
+            background: rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        #timeline {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .timeline-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timeline-time {
+            color: #10b981;
+            font-weight: bold;
+            display: inline-block;
+            min-width: 80px;
+        }
+        .resource-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+        .resource-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .resource-item.blocking {
+            border-left: 4px solid #ef4444;
+        }
+        .resource-item.non-blocking {
+            border-left: 4px solid #10b981;
+        }
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .badge.blocking { background: #ef4444; }
+        .badge.non-blocking { background: #10b981; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ Render Blocking Performance Test</h1>
+        
+        <div class="card">
+            <h2>🎯 Performance Metrics</h2>
+            <div class="metric">
+                <div class="metric-card">
+                    <div class="metric-label">First Contentful Paint</div>
+                    <div class="metric-value" id="fcp">--</div>
+                    <div class="status" id="fcp-status">Measuring...</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Largest Contentful Paint</div>
+                    <div class="metric-value" id="lcp">--</div>
+                    <div class="status" id="lcp-status">Measuring...</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">DOM Content Loaded</div>
+                    <div class="metric-value" id="dcl">--</div>
+                    <div class="status" id="dcl-status">Measuring...</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Load Complete</div>
+                    <div class="metric-value" id="load">--</div>
+                    <div class="status" id="load-status">Measuring...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Render-Blocking Resources</h2>
+            <p>Resources that may block initial render:</p>
+            <ul class="resource-list" id="resource-list">
+                <li>Analyzing...</li>
+            </ul>
+            <button onclick="analyzeResources()">🔄 Re-analyze Resources</button>
+            <button onclick="runLighthouse()">🔍 Run Lighthouse Test</button>
+        </div>
+
+        <div class="card">
+            <h2>⏱️ Load Timeline</h2>
+            <div id="timeline">
+                <div class="timeline-entry">
+                    <span class="timeline-time">0ms</span> Page load started...
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>✅ Optimization Checklist</h2>
+            <ul id="checklist" style="list-style: none; font-size: 1.1rem;">
+                <li id="check-critical-css">⏳ Checking critical CSS...</li>
+                <li id="check-deferred-css">⏳ Checking deferred CSS...</li>
+                <li id="check-font-loading">⏳ Checking font loading...</li>
+                <li id="check-render-blocking">⏳ Checking render-blocking...</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📱 Quick Actions</h2>
+            <button onclick="clearCache()">🗑️ Clear Cache</button>
+            <button onclick="testMobile()">📱 Test Mobile</button>
+            <button onclick="testSlow3G()">🐌 Simulate Slow 3G</button>
+            <button onclick="exportResults()">📥 Export Results</button>
+        </div>
+    </div>
+
+    <script>
+        const timeline = document.getElementById('timeline');
+        const startTime = performance.now();
+
+        function addTimelineEntry(message, time) {
+            const entry = document.createElement('div');
+            entry.className = 'timeline-entry';
+            entry.innerHTML = `<span class="timeline-time">${time}ms</span> ${message}`;
+            timeline.appendChild(entry);
+            timeline.scrollTop = timeline.scrollHeight;
+        }
+
+        // Measure FCP
+        if ('PerformanceObserver' in window) {
+            const paintObserver = new PerformanceObserver((list) => {
+                for (const entry of list.getEntries()) {
+                    if (entry.name === 'first-contentful-paint') {
+                        const fcp = Math.round(entry.startTime);
+                        document.getElementById('fcp').textContent = fcp + 'ms';
+                        document.getElementById('fcp-status').textContent = 
+                            fcp < 1000 ? 'Good' : fcp < 2500 ? 'Needs Work' : 'Poor';
+                        document.getElementById('fcp-status').className = 
+                            fcp < 1000 ? 'status good' : fcp < 2500 ? 'status warning' : 'status poor';
+                        addTimelineEntry(`✅ First Contentful Paint`, fcp);
+                    }
+                }
+            });
+            paintObserver.observe({ entryTypes: ['paint'] });
+
+            // Measure LCP
+            const lcpObserver = new PerformanceObserver((list) => {
+                const entries = list.getEntries();
+                const lastEntry = entries[entries.length - 1];
+                const lcp = Math.round(lastEntry.renderTime || lastEntry.loadTime);
+                document.getElementById('lcp').textContent = lcp + 'ms';
+                document.getElementById('lcp-status').textContent = 
+                    lcp < 2500 ? 'Good' : lcp < 4000 ? 'Needs Work' : 'Poor';
+                document.getElementById('lcp-status').className = 
+                    lcp < 2500 ? 'status good' : lcp < 4000 ? 'status warning' : 'status poor';
+                addTimelineEntry(`✅ Largest Contentful Paint`, lcp);
+            });
+            lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
+        }
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            const dcl = Math.round(performance.now() - startTime);
+            document.getElementById('dcl').textContent = dcl + 'ms';
+            document.getElementById('dcl-status').textContent = 
+                dcl < 1500 ? 'Good' : dcl < 2500 ? 'Needs Work' : 'Poor';
+            document.getElementById('dcl-status').className = 
+                dcl < 1500 ? 'status good' : dcl < 2500 ? 'status warning' : 'status poor';
+            addTimelineEntry(`✅ DOM Content Loaded`, dcl);
+        });
+
+        // Window Load
+        window.addEventListener('load', () => {
+            const load = Math.round(performance.now() - startTime);
+            document.getElementById('load').textContent = load + 'ms';
+            document.getElementById('load-status').textContent = 
+                load < 3000 ? 'Good' : load < 5000 ? 'Needs Work' : 'Poor';
+            document.getElementById('load-status').className = 
+                load < 3000 ? 'status good' : load < 5000 ? 'status warning' : 'status poor';
+            addTimelineEntry(`✅ Page Load Complete`, load);
+
+            // Analyze resources
+            analyzeResources();
+            checkOptimizations();
+        });
+
+        function analyzeResources() {
+            const resourceList = document.getElementById('resource-list');
+            resourceList.innerHTML = '';
+
+            const resources = performance.getEntriesByType('resource');
+            const cssResources = resources.filter(r => 
+                r.name.includes('.css') || r.initiatorType === 'link'
+            );
+
+            if (cssResources.length === 0) {
+                resourceList.innerHTML = '<li>✅ No render-blocking CSS detected!</li>';
+                return;
+            }
+
+            cssResources.forEach(resource => {
+                const li = document.createElement('li');
+                li.className = 'resource-item';
+                
+                const duration = Math.round(resource.duration);
+                const url = new URL(resource.name);
+                const filename = url.pathname.split('/').pop();
+                
+                // Check if it's render-blocking (loaded synchronously)
+                const isBlocking = resource.renderBlockingStatus === 'blocking';
+                
+                li.className += isBlocking ? ' blocking' : ' non-blocking';
+                li.innerHTML = `
+                    <div>
+                        <strong>${filename}</strong><br>
+                        <small>${url.hostname} • ${duration}ms</small>
+                    </div>
+                    <span class="badge ${isBlocking ? 'blocking' : 'non-blocking'}">
+                        ${isBlocking ? '⚠️ Blocking' : '✅ Non-blocking'}
+                    </span>
+                `;
+                resourceList.appendChild(li);
+
+                addTimelineEntry(
+                    `${isBlocking ? '⚠️' : '✅'} ${filename} loaded (${duration}ms)`,
+                    Math.round(resource.startTime)
+                );
+            });
+        }
+
+        function checkOptimizations() {
+            // Check for critical CSS
+            const hasInlineStyles = document.querySelectorAll('style').length > 0;
+            document.getElementById('check-critical-css').innerHTML = 
+                hasInlineStyles ? '✅ Critical CSS is inlined' : '❌ No inline critical CSS found';
+
+            // Check for deferred CSS
+            const deferredCSS = Array.from(document.querySelectorAll('link[rel="preload"][as="style"]'));
+            document.getElementById('check-deferred-css').innerHTML = 
+                deferredCSS.length > 0 ? `✅ ${deferredCSS.length} CSS file(s) deferred` : '❌ No deferred CSS found';
+
+            // Check font loading
+            const hasInterFont = document.fonts ? Array.from(document.fonts).some(f => f.family.includes('Inter')) : false;
+            document.getElementById('check-font-loading').innerHTML = 
+                hasInterFont ? '✅ Custom fonts loaded' : '⏳ Using system fonts';
+
+            // Check render-blocking
+            const blockingResources = performance.getEntriesByType('resource')
+                .filter(r => r.renderBlockingStatus === 'blocking').length;
+            document.getElementById('check-render-blocking').innerHTML = 
+                blockingResources === 0 ? '✅ No render-blocking resources' : 
+                `⚠️ ${blockingResources} render-blocking resource(s)`;
+        }
+
+        function clearCache() {
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+            alert('Cache cleared! Please reload the page.');
+        }
+
+        function testMobile() {
+            alert('Open Chrome DevTools → Toggle Device Toolbar (Ctrl+Shift+M) to test mobile view');
+        }
+
+        function testSlow3G() {
+            alert('Open Chrome DevTools → Network tab → Throttling dropdown → Select "Slow 3G"');
+        }
+
+        function runLighthouse() {
+            alert('To run Lighthouse:\n\n1. Open Chrome DevTools (F12)\n2. Click "Lighthouse" tab\n3. Select "Performance"\n4. Click "Analyze page load"\n\nOr run from command line:\nlighthouse https://sulochanthapa.github.io --view');
+        }
+
+        function exportResults() {
+            const results = {
+                fcp: document.getElementById('fcp').textContent,
+                lcp: document.getElementById('lcp').textContent,
+                dcl: document.getElementById('dcl').textContent,
+                load: document.getElementById('load').textContent,
+                timestamp: new Date().toISOString(),
+                userAgent: navigator.userAgent
+            };
+            
+            const blob = new Blob([JSON.stringify(results, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `performance-test-${Date.now()}.json`;
+            a.click();
+        }
+
+        // Initial timeline entry
+        addTimelineEntry('🚀 Performance monitoring started', 0);
+    </script>
+</body>
+</html>

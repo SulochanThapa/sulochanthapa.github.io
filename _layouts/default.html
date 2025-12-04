@@ -12,6 +12,29 @@
 
   <link rel="canonical" href="https://sulochanthapa.github.io">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <!-- Cache Control Headers (for browsers) -->
+  <meta http-equiv="Cache-Control" content="public, max-age=31536000, immutable">
+  
+  <!-- DNS Prefetch for external resources -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+  <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="dns-prefetch" href="https://lottie.host">
+  <link rel="dns-prefetch" href="https://api.github.com">
+  
+  <!-- Preconnect to critical origins (limit to 4 most important) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="preconnect" href="https://lottie.host" crossorigin>
+  
+  <!-- Preload critical assets -->
+  <link rel="preload" href="{{ site.baseurl }}/assets/images/sulochan-thapa.webp" as="image" type="image/webp">
+  
+  <!-- Modulepreload for critical JavaScript modules -->
+  <link rel="modulepreload" href="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs">
 
   <meta name="twitter:site" content="@sulochanthapa">
   <meta name="twitter:creator" content="@sulochanthapa">
@@ -29,12 +52,57 @@
   <meta property="og:image" content="{{ site.baseurl }}/assets/images/cd_logo.webp">
   <title>{{ page.title||default:site.title }}</title>
   <link rel="shortcut icon" href="{{ site.baseurl }}/favicon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Optimized font loading with display=swap to prevent blocking -->
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
 <link rel="icon" href="{{ site.baseurl }}/assets/images/cd_logo.svg" type="image/svg+xml" />
-<link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" />
+<!-- Defer non-critical CSS -->
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://cdn.jsdelivr.net/npm/@n8n/chat/dist/style.css" rel="stylesheet" /></noscript>
 <link rel="apple-touch-icon" href="{{ site.baseurl }}/assets/images/apple-touch-icon.png" />
 
 <link rel="manifest" href="{{ site.baseurl }}/manifest.webmanifest" />
+  <!-- CSS Loading Helper -->
+  <script>
+    // Polyfill for loadCSS
+    !function(e){"use strict";var t=function(t,n,r,o){var i,a=e.document,d=a.createElement("link");if(n)i=n;else{var l=(a.body||a.getElementsByTagName("head")[0]).childNodes;i=l[l.length-1]}var s=a.styleSheets;if(o)for(var f=0;f<s.length;f++)s[f].href&&s[f].href.indexOf(t)>-1&&(d.href=t);d.rel="stylesheet",d.href=t,d.media="only x",function e(t){if(a.body)return t();setTimeout(function(){e(t)})}(function(){i.parentNode.insertBefore(d,n?i:i.nextSibling)});var u=function(e){for(var t=d.href,n=s.length;n--;)if(s[n].href===t)return e();setTimeout(function(){u(e)})};return d.addEventListener&&d.addEventListener("load",function(){this.media=r||"all"}),d.onloadcssdefined=u,u(function(){d.media!==r&&(d.media=r)}),d};"undefined"!=typeof exports?exports.loadCSS=t:e.loadCSS=t}("undefined"!=typeof global?global:this);
+  </script>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    // Register service worker for caching
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(registration => {
+            console.log('Service Worker registered successfully:', registration.scope);
+            
+            // Check for updates periodically
+            setInterval(() => {
+              registration.update();
+            }, 3600000); // Check every hour
+          })
+          .catch(error => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+    
+    // Font loading detection
+    if ('fonts' in document) {
+      Promise.all([
+        document.fonts.load('400 1em Inter'),
+        document.fonts.load('500 1em Inter'),
+        document.fonts.load('600 1em Inter'),
+        document.fonts.load('700 1em Inter')
+      ]).then(() => {
+        document.documentElement.classList.add('fonts-loaded');
+      }).catch(err => {
+        console.log('Font loading failed:', err);
+      });
+    }
+  </script>
+  
   <!-- Theme Check and Update -->
   <script>
     const html = document.querySelector('html');
@@ -47,10 +115,27 @@
     else if (isLightOrAuto && !html.classList.contains('light')) html.classList.add('light');
   </script>
 
-  <!-- CSS Preline -->
-  <link rel="stylesheet" href="{{site.baseurl}}/assets/css/main.css">
+  <!-- CSS Preline - Deferred to prevent render blocking -->
+  <link rel="preload" href="{{site.baseurl}}/assets/css/main.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{{site.baseurl}}/assets/css/main.css"></noscript>
+  
+  <!-- Critical inline CSS for initial render -->
   <style>
-        /* Custom scrollbar for a cleaner look */
+        /* Critical CSS - Inline for fast first paint */
+        *,::before,::after{box-sizing:border-box;border:0 solid}
+        html{line-height:1.5;-webkit-text-size-adjust:100%;tab-size:4;scroll-behavior:smooth}
+        body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:#171717;color:#fff;line-height:inherit}
+        
+        /* Layout essentials */
+        .bg-neutral-900{background-color:#171717}
+        .fixed{position:fixed}
+        .hidden{display:none}
+        .flex{display:flex}
+        .items-center{align-items:center}
+        .justify-between{justify-content:space-between}
+        .min-h-screen{min-height:100vh}
+        
+        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -64,12 +149,35 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #6a6a6a;
         }
-        body {
-            font-family: 'Inter', sans-serif;
+        /* Font will upgrade to Inter when loaded */
+        .fonts-loaded body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        /* Typing indicator animation */
+        
+        /* Image loading optimization with containment */
+        img {
+            content-visibility: auto;
+            contain: layout style paint; /* Isolate image rendering */
+        }
+        img[loading="lazy"] {
+            opacity: 0;
+            transition: opacity 0.3s ease-in;
+        }
+        img.lazy-loaded,
+        img[loading="lazy"].lazy-loaded {
+            opacity: 1;
+        }
+        /* Prevent layout shift with aspect ratio */
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        /* Typing indicator animation with GPU acceleration */
         .typing-dot {
             animation: dot-pulse 1.5s infinite;
+            will-change: transform, opacity; /* Hint browser for optimization */
+            transform: translateZ(0); /* Force GPU acceleration */
         }
         .typing-dot:nth-child(2) {
             animation-delay: 0.2s;
@@ -77,13 +185,17 @@
         .typing-dot:nth-child(3) {
             animation-delay: 0.4s;
         }
-        /* Attention Popup Animation */
+        /* Attention Popup Animation with GPU acceleration */
         .popup-enter {
             animation: slide-up-fade-in 0.5s ease-out forwards;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
 
         .popup-exit {
             animation: fade-out 0.5s ease-in forwards;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
         .right-8{
           right:calc(var(--spacing)*8)
@@ -115,6 +227,14 @@
                 opacity: 0;
             }
         }
+        /* Containment for performance */
+        #chat-widget {
+            contain: layout style; /* Isolate widget layout */
+        }
+        .fixed {
+            contain: layout; /* Isolate fixed elements */
+        }
+        
         @keyframes dot-pulse {
             0%, 60%, 100% {
                 transform: scale(0.8);
@@ -126,8 +246,35 @@
             }
         }
     </style>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3060402455643540"
-     crossorigin="anonymous"></script>
+    <!-- Conditional Google Ads - Only load on desktop & during idle time -->
+    <script>
+      // Load ads only on desktop (>768px) during idle time to reduce mobile waste
+      // Saves ~135 KiB on mobile devices where ads are less effective
+      const shouldLoadAds = window.innerWidth >= 768 && 
+                           !navigator.connection?.saveData && // Respect data saver
+                           (navigator.hardwareConcurrency || 4) > 2; // Decent CPU
+      
+      if (shouldLoadAds) {
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(() => {
+            const adsScript = document.createElement('script');
+            adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3060402455643540';
+            adsScript.async = true;
+            adsScript.crossOrigin = 'anonymous';
+            document.head.appendChild(adsScript);
+          }, { timeout: 3000 });
+        } else {
+          // Fallback: delay by 3 seconds
+          setTimeout(() => {
+            const adsScript = document.createElement('script');
+            adsScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3060402455643540';
+            adsScript.async = true;
+            adsScript.crossOrigin = 'anonymous';
+            document.head.appendChild(adsScript);
+          }, 3000);
+        }
+      }
+    </script>
 </head>
 
 <body class="bg-neutral-900">
@@ -202,15 +349,248 @@ class="fixed bottom-20 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p
         <p class="text-sm font-medium">Have a question? Chat with us! &rarr;</p>
     </div>
     <!-- Toggle Button -->
-    <button id="chat-toggle-button" class="fixed bottom-3 right-5 sm:bottom-6 sm:right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 z-50">
+    <button id="chat-toggle-button" class="fixed bottom-3 right-5 sm:bottom-6 sm:right-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-3 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 z-50" aria-label="Toggle chat widget">
         <!-- Chat Icon -->
-        <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
+        <svg id="chat-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block" aria-hidden="true"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"></path></svg>
         <!-- Close Icon -->
-        <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        <svg id="close-icon" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
     </button>
   <!-- JS Implementing Plugins -->
-  <!-- JS PLUGINS -->
-  <script src="https://cdn.jsdelivr.net/npm/preline/dist/index.js"></script>
+  <!-- Lightweight Navigation Handler - Replaces 69.3 KiB Preline library -->
+  <script>
+    // Minimal vanilla JS navigation to eliminate 62.6 KiB Preline waste
+    document.addEventListener('DOMContentLoaded', () => {
+      // Mobile menu collapse handler
+      const collapseToggle = document.getElementById('hs-navbar-floating-dark-collapse');
+      const collapseMenu = document.getElementById('hs-navbar-floating-dark');
+      
+      if (collapseToggle && collapseMenu) {
+        collapseToggle.addEventListener('click', () => {
+          const isExpanded = collapseToggle.getAttribute('aria-expanded') === 'true';
+          collapseToggle.setAttribute('aria-expanded', !isExpanded);
+          collapseMenu.classList.toggle('hidden');
+          
+          // Toggle icons
+          const openIcon = collapseToggle.querySelector('.hs-collapse-open\\:hidden');
+          const closeIcon = collapseToggle.querySelector('.hs-collapse-open\\:block');
+          if (openIcon && closeIcon) {
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+          }
+        });
+      }
+      
+      // Dropdown menu handlers
+      const dropdowns = document.querySelectorAll('[data-hs-collapse], .hs-dropdown-toggle');
+      dropdowns.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const target = toggle.getAttribute('data-hs-collapse') || 
+                        toggle.nextElementSibling;
+          
+          if (typeof target === 'string') {
+            const menu = document.querySelector(target);
+            if (menu) menu.classList.toggle('hidden');
+          } else if (target && target.classList.contains('hs-dropdown-menu')) {
+            target.classList.toggle('hidden');
+            target.classList.toggle('opacity-0');
+            target.classList.toggle('opacity-100');
+          }
+        });
+      });
+      
+      // Close dropdowns on outside click
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.hs-dropdown-menu').forEach(menu => {
+          if (!menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+            menu.classList.add('opacity-0');
+            menu.classList.remove('opacity-100');
+          }
+        });
+      });
+    });
+  </script>
+  
+  <!-- Performance Monitoring: Long Task Detection -->
+  <script>
+    // Monitor and warn about long tasks (> 50ms) to identify bottlenecks
+    if ('PerformanceObserver' in window) {
+      try {
+        const longTaskObserver = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.duration > 50) {
+              console.warn('⚠️ Long task detected:', {
+                duration: entry.duration.toFixed(2) + 'ms',
+                startTime: entry.startTime.toFixed(2) + 'ms',
+                name: entry.name
+              });
+            }
+          }
+        });
+        
+        longTaskObserver.observe({ entryTypes: ['longtask'] });
+      } catch (e) {
+        // Browser doesn't support longtask observation
+      }
+      
+      // Monitor Total Blocking Time (TBT)
+      let totalBlockingTime = 0;
+      try {
+        const tbtObserver = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            if (entry.duration > 50) {
+              totalBlockingTime += (entry.duration - 50);
+            }
+          }
+        });
+        
+        tbtObserver.observe({ entryTypes: ['longtask'] });
+        
+        // Report TBT on page unload
+        window.addEventListener('beforeunload', () => {
+          if (totalBlockingTime > 300) {
+            console.warn('⚠️ High Total Blocking Time:', totalBlockingTime.toFixed(2) + 'ms (target: <300ms)');
+          }
+        });
+      } catch (e) {
+        // Fallback
+      }
+    }
+    
+    // Break up long-running tasks using scheduler.yield (if available)
+    async function yieldToMain() {
+      if ('scheduler' in window && 'yield' in scheduler) {
+        return scheduler.yield();
+      }
+      return new Promise(resolve => {
+        setTimeout(resolve, 0);
+      });
+    }
+    
+    // Debounce helper for expensive operations
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+    
+    // Throttle helper for scroll/resize handlers
+    function throttle(func, limit) {
+      let inThrottle;
+      return function(...args) {
+        if (!inThrottle) {
+          func.apply(this, args);
+          inThrottle = true;
+          setTimeout(() => inThrottle = false, limit);
+        }
+      };
+    }
+  </script>
+  
+  <!-- Native Lazy Loading Fallback & Image Optimization -->
+  <script>
+    // Enhanced lazy loading with Intersection Observer
+    if ('IntersectionObserver' in window) {
+      const imageObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const img = entry.target;
+            
+            // Set data-src to src if exists
+            if (img.dataset.src) {
+              img.src = img.dataset.src;
+            }
+            
+            // Set data-srcset to srcset if exists
+            if (img.dataset.srcset) {
+              img.srcset = img.dataset.srcset;
+            }
+            
+            // Remove loading class
+            img.classList.remove('lazy-loading');
+            img.classList.add('lazy-loaded');
+            
+            // Stop observing this image
+            observer.unobserve(img);
+          }
+        });
+      }, {
+        rootMargin: '50px 0px',  // Start loading 50px before entering viewport
+        threshold: 0.01
+      });
+
+      // Observe all images with loading="lazy"
+      document.addEventListener('DOMContentLoaded', () => {
+        const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+        lazyImages.forEach(img => {
+          imageObserver.observe(img);
+          img.classList.add('lazy-loading');
+        });
+      });
+    }
+    
+    // Batch DOM reads and writes to minimize layout thrashing
+    let readQueue = [];
+    let writeQueue = [];
+    let scheduled = false;
+    
+    function scheduleFlush() {
+      if (!scheduled) {
+        scheduled = true;
+        requestAnimationFrame(flush);
+      }
+    }
+    
+    function flush() {
+      // Execute all reads first
+      readQueue.forEach(fn => fn());
+      readQueue = [];
+      
+      // Then execute all writes
+      writeQueue.forEach(fn => fn());
+      writeQueue = [];
+      
+      scheduled = false;
+    }
+    
+    function measure(fn) {
+      readQueue.push(fn);
+      scheduleFlush();
+    }
+    
+    function mutate(fn) {
+      writeQueue.push(fn);
+      scheduleFlush();
+    }
+    
+    // Optimize style changes to use transforms
+    function optimizeTransform(element, x, y) {
+      // Use transform instead of top/left for better performance
+      element.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    }
+
+    // Image decode optimization
+    if ('decode' in HTMLImageElement.prototype) {
+      document.addEventListener('DOMContentLoaded', () => {
+        const criticalImages = document.querySelectorAll('img[loading="eager"], img[fetchpriority="high"]');
+        criticalImages.forEach(img => {
+          img.decode().then(() => {
+            img.style.opacity = '1';
+          }).catch(() => {
+            // Fallback for decode errors
+            img.style.opacity = '1';
+          });
+        });
+      });
+    }
+  </script>
 
 <!-- <script type="module">
 	import { createChat } from 'https://cdn.jsdelivr.net/npm/@n8n/chat/dist/chat.bundle.es.js';
@@ -268,28 +648,35 @@ createChat({
 });
 </script> -->
 <script>
-        const chatMessages = document.getElementById('chat-messages');
-        const messageInput = document.getElementById('message-input');
-        const sendButton = document.getElementById('send-button');
+        // Defer chat widget initialization to reduce initial JS execution
+        let chatInitialized = false;
+        
+        function initializeChat() {
+            if (chatInitialized) return;
+            chatInitialized = true;
+            
+            const chatMessages = document.getElementById('chat-messages');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
 
-        // Widget toggle elements
-        const chatWidget = document.getElementById('chat-widget');
-        const chatToggleButton = document.getElementById('chat-toggle-button');
-        const closeWidgetButton = document.getElementById('close-widget-button');
-        const chatIcon = document.getElementById('chat-icon');
-        const closeIcon = document.getElementById('close-icon');
-          const attentionPopup = document.getElementById('attention-popup');
-        let popupTimer; // To hold the timeout ID for auto-hiding
+            // Widget toggle elements
+            const chatWidget = document.getElementById('chat-widget');
+            const chatToggleButton = document.getElementById('chat-toggle-button');
+            const closeWidgetButton = document.getElementById('close-widget-button');
+            const chatIcon = document.getElementById('chat-icon');
+            const closeIcon = document.getElementById('close-icon');
+            const attentionPopup = document.getElementById('attention-popup');
+            let popupTimer; // To hold the timeout ID for auto-hiding
 
-        // --- CONFIGURATION ---
-        const webhookUrl = 'http://n8n-rosk8ww0ssoc4g4kc4wos8sg.155.248.250.27.sslip.io/webhook/d7e795ae-04ee-4727-8cc1-3a5cddabf7e0/chat';
-        const webhookConfig = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'ngrok-skip-browser-warning': 'true'
-            }
-        };
+            // --- CONFIGURATION ---
+            const webhookUrl = 'http://n8n-rosk8ww0ssoc4g4kc4wos8sg.155.248.250.27.sslip.io/webhook/d7e795ae-04ee-4727-8cc1-3a5cddabf7e0/chat';
+            const webhookConfig = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                }
+            };
         /**
          * Shows the attention-grabbing popup.
          */
@@ -435,7 +822,12 @@ createChat({
                     </div>
                 `;
             }
-            chatMessages.appendChild(messageElement);
+            
+            // Batch DOM mutation and reading for better performance
+            mutate(() => {
+                chatMessages.appendChild(messageElement);
+            });
+            
             scrollToBottom();
         }
 
@@ -473,14 +865,43 @@ createChat({
 
         /**
          * Scrolls the chat window to the latest message.
+         * Uses requestAnimationFrame to prevent forced reflow.
          */
         function scrollToBottom() {
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            requestAnimationFrame(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            });
         }
-            // Show the attention popup after the page loads
+        
+        // Show the attention popup after the page loads
         window.addEventListener('load', () => {
             // Show popup after a short delay
             setTimeout(showAttentionPopup, 2000); // appears after 2 seconds
+        });
+        
+        } // End of initializeChat function
+        
+        // Initialize chat on first interaction (lazy initialization)
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatToggleButton = document.getElementById('chat-toggle-button');
+            
+            // Initialize on first click
+            chatToggleButton.addEventListener('click', () => {
+                if (!chatInitialized) {
+                    initializeChat();
+                }
+            }, { once: false });
+            
+            // Or initialize after idle time
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(() => {
+                    initializeChat();
+                }, { timeout: 5000 });
+            } else {
+                setTimeout(() => {
+                    initializeChat();
+                }, 3000);
+            }
         });
 
     </script>

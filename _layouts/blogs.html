@@ -88,6 +88,55 @@ class="fixed bottom-5 right-5 z-50 bg-green-500 hover:bg-green-600 text-white p-
   </svg>
 </a>
   <!-- JS Implementing Plugins -->
-  <script src="https://cdn.jsdelivr.net/npm/preline/dist/index.js"></script>
+  <!-- Lightweight Navigation Handler - Replaces Preline library -->
+  <script>
+    // Minimal vanilla JS navigation (same as default.html)
+    document.addEventListener('DOMContentLoaded', () => {
+      const collapseToggle = document.getElementById('hs-navbar-floating-dark-collapse');
+      const collapseMenu = document.getElementById('hs-navbar-floating-dark');
+      
+      if (collapseToggle && collapseMenu) {
+        collapseToggle.addEventListener('click', () => {
+          const isExpanded = collapseToggle.getAttribute('aria-expanded') === 'true';
+          collapseToggle.setAttribute('aria-expanded', !isExpanded);
+          collapseMenu.classList.toggle('hidden');
+          
+          const openIcon = collapseToggle.querySelector('.hs-collapse-open\\:hidden');
+          const closeIcon = collapseToggle.querySelector('.hs-collapse-open\\:block');
+          if (openIcon && closeIcon) {
+            openIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
+          }
+        });
+      }
+      
+      const dropdowns = document.querySelectorAll('[data-hs-collapse], .hs-dropdown-toggle');
+      dropdowns.forEach(toggle => {
+        toggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const target = toggle.getAttribute('data-hs-collapse') || toggle.nextElementSibling;
+          
+          if (typeof target === 'string') {
+            const menu = document.querySelector(target);
+            if (menu) menu.classList.toggle('hidden');
+          } else if (target && target.classList.contains('hs-dropdown-menu')) {
+            target.classList.toggle('hidden');
+            target.classList.toggle('opacity-0');
+            target.classList.toggle('opacity-100');
+          }
+        });
+      });
+      
+      document.addEventListener('click', () => {
+        document.querySelectorAll('.hs-dropdown-menu').forEach(menu => {
+          if (!menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+            menu.classList.add('opacity-0');
+            menu.classList.remove('opacity-100');
+          }
+        });
+      });
+    });
+  </script>
 </body>
 </html>

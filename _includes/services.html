@@ -23,6 +23,8 @@
   style="width: 300px; height: 300px"
   loop
   autoplay
+  loading="lazy"
+  aria-hidden="true"
 ></dotlottie-player>
         </div>
         <div class="p-6 flex-1 flex flex-col">
@@ -34,7 +36,7 @@
       <div class="bg-neutral-800 rounded-xl p-0 shadow-lg hover:scale-105 transition group flex flex-col overflow-hidden">
         <div class="h-40 w-full bg-gradient-to-br from-blue-200/30 to-blue-400/10 flex items-center justify-center mt-10">
           
-<dotlottie-player src="https://lottie.host/fc23762b-ccd3-4f73-aa0b-41b8988d7fa5/GzFd931NXK.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay></dotlottie-player>
+<dotlottie-player src="https://lottie.host/fc23762b-ccd3-4f73-aa0b-41b8988d7fa5/GzFd931NXK.lottie" background="transparent" speed="1" style="width: 300px; height: 300px" loop autoplay loading="lazy" aria-hidden="true"></dotlottie-player>
         </div>
         <div class="p-6 flex-1 flex flex-col">
           <h3 class="font-bold text-xl text-white mb-2">Website Development</h3>
@@ -51,6 +53,8 @@
   style="width: 300px; height: 300px"
   loop
   autoplay
+  loading="lazy"
+  aria-hidden="true"
 ></dotlottie-player>
         </div>
         <div class="p-6 flex-1 flex flex-col">
@@ -69,6 +73,8 @@
   style="width: 300px; height: 300px"
   loop
   autoplay
+  loading="lazy"
+  aria-hidden="true"
 ></dotlottie-player>
         </div>
         <div class="p-6 flex-1 flex flex-col">
@@ -82,4 +88,53 @@
   </div>
 </div>
 <!-- End Services -->
- <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
+<script>
+  // Aggressively lazy load Lottie player to reduce unused JavaScript waste
+  if ('IntersectionObserver' in window) {
+    const servicesSection = document.querySelector('#services');
+    if (servicesSection) {
+      const lottieObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          // Only load when 25% visible to reduce unused JS
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.25) {
+            // Add modulepreload hint for faster loading
+            const preload = document.createElement('link');
+            preload.rel = 'modulepreload';
+            preload.href = 'https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs';
+            document.head.appendChild(preload);
+            
+            // Dynamically import the Lottie player module
+            import('https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs')
+              .then(() => {
+                // Explicitly load all players after module loads
+                const players = servicesSection.querySelectorAll('dotlottie-player');
+                players.forEach(player => player.load && player.load());
+              })
+              .catch(err => console.error('Failed to load Lottie player:', err));
+            lottieObserver.unobserve(entry.target);
+          }
+        });
+      }, {
+        rootMargin: '50px 0px', // Reduced from 200px - only load when closer
+        threshold: 0.25 // Require 25% visibility before loading
+      });
+      
+      // Start observing after page load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          lottieObserver.observe(servicesSection);
+        });
+      } else {
+        lottieObserver.observe(servicesSection);
+      }
+    }
+  } else {
+    // Fallback: Load after a delay
+    setTimeout(() => {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = 'https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs';
+      document.body.appendChild(script);
+    }, 1500);
+  }
+</script>

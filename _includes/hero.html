@@ -67,9 +67,15 @@
         <!-- Right: Image (auto) -->
         <div class="flex-2 flex-row justify-center lg:justify-end mt-10 lg:mt-0">
             <img src="{{ site.baseurl }}/assets/images/sulochan-thapa.webp"
-                 alt="Sulochan Thapa"
+                 srcset="{{ site.baseurl }}/assets/images/sulochan-thapa.webp 730w"
+                 sizes="(max-width: 640px) 160px, (max-width: 1024px) 200px, 224px"
+                 alt="Sulochan Thapa - Local Business Digital Marketing Expert"
                  class="w-56 h-56 rounded-full object-cover shadow-2xl border-4 border-[#ff0] bg-neutral-800"
-                 loading="lazy">
+                 width="224"
+                 height="224"
+                 loading="eager"
+                 decoding="async"
+                 fetchpriority="high">
                   <div class="mt-8">
                 <span class="inline-block bg-[#ff0] text-neutral-900 font-bold text-lg rounded-full px-6 py-2 shadow-md animate-bounce-slow">
                     Hi, I am Sulochan Thapa
