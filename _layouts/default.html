@@ -882,27 +882,27 @@ createChat({
         } // End of initializeChat function
         
         // Initialize chat on first interaction (lazy initialization)
-        document.addEventListener('DOMContentLoaded', () => {
-            const chatToggleButton = document.getElementById('chat-toggle-button');
+        // document.addEventListener('DOMContentLoaded', () => {
+        //     const chatToggleButton = document.getElementById('chat-toggle-button');
             
-            // Initialize on first click
-            chatToggleButton.addEventListener('click', () => {
-                if (!chatInitialized) {
-                   // initializeChat();
-                }
-            }, { once: false });
+        //     // Initialize on first click
+        //     chatToggleButton.addEventListener('click', () => {
+        //         if (!chatInitialized) {
+        //            // initializeChat();
+        //         }
+        //     }, { once: false });
             
-            // Or initialize after idle time
-            if ('requestIdleCallback' in window) {
-                requestIdleCallback(() => {
-                    initializeChat();
-                }, { timeout: 5000 });
-            } else {
-                setTimeout(() => {
-                    initializeChat();
-                }, 3000);
-            }
-        });
+        //     // Or initialize after idle time
+        //     if ('requestIdleCallback' in window) {
+        //         requestIdleCallback(() => {
+        //             initializeChat();
+        //         }, { timeout: 5000 });
+        //     } else {
+        //         setTimeout(() => {
+        //             initializeChat();
+        //         }, 3000);
+        //     }
+        // });
 
     </script>
 </body>
